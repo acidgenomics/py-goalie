@@ -173,7 +173,7 @@ def has_nonzero_rows_and_cols(x: object) -> GoalieCheckResult:
                     _to_name(x),
                     j + 1,
                 )
-    except TypeError, IndexError, KeyError:
+    except (TypeError, IndexError, KeyError):
         return _false(
             "'%s' does not support row/column sum checks.",
             _to_name(x),
@@ -216,7 +216,7 @@ def has_unique_cols(x: object) -> GoalieCheckResult:
                 _to_name(x),
                 positions,
             )
-    except TypeError, IndexError, KeyError:
+    except (TypeError, IndexError, KeyError):
         return _false(
             "'%s' does not support column comparison.",
             _to_name(x),
@@ -270,7 +270,7 @@ def _get_shape(x: object) -> tuple[int, ...] | None:
     if shape is not None:
         try:
             return tuple(int(s) for s in shape)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return None
     return None
 
