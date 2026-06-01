@@ -4,8 +4,6 @@ Converted from R check-scalar-hasLength.R, check-scalar-hasElements.R,
 check-scalar-areSameLength.R, check-scalar-allAreAtomic.R.
 """
 
-from __future__ import annotations
-
 from collections.abc import Sized
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name

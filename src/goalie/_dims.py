@@ -5,8 +5,6 @@ check-scalar-hasNonzeroRowsAndCols.R, check-scalar-hasUniqueCols.R,
 check-scalar-isOfDimension.R.
 """
 
-from __future__ import annotations
-
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
 
 
