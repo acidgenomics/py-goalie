@@ -6,13 +6,14 @@ Converted from R check-vector functions:
 - check-vector-isAwsS3Uri.R
 """
 
-from __future__ import annotations
-
+import functools
 import re
 import urllib.error
 import urllib.request
+from collections.abc import Sequence
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
+from goalie._vectorize import _check_all
 
 
 def is_url(x: str) -> GoalieCheckResult:
@@ -111,3 +112,36 @@ def is_aws_s3_uri(x: str) -> GoalieCheckResult:
     if re.match(r"^s3://.+$", x):
         return _TRUE
     return _false("'%s' is not an AWS S3 URI.", x)
+
+
+def all_are_urls(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all inputs are URLs.
+
+    Examples
+    --------
+        >>> all_are_urls([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_url)
+
+
+def all_are_existing_urls(x: Sequence[str], timeout: float = 5.0) -> GoalieCheckResult:
+    """Check whether all inputs are accessible URLs.
+
+    Examples
+    --------
+        >>> all_are_existing_urls([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, functools.partial(is_existing_url, timeout=timeout))
+
+
+def all_are_aws_s3_uris(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all inputs are AWS S3 URIs.
+
+    Examples
+    --------
+        >>> all_are_aws_s3_uris([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_aws_s3_uri)

@@ -4,8 +4,6 @@ Converted from R check-scalar-hasNames.R, check-scalar-hasValidNames.R,
 check-scalar-validNames.R, check-scalar-hasRownames.R.
 """
 
-from __future__ import annotations
-
 import keyword
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name

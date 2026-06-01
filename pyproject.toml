@@ -1,21 +1,20 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+build-backend = "uv_build"
+requires = ["uv_build>=0.11,<1"]
 
 [project]
 name = "goalie"
-version = "0.0.1"
+version = "0.1.0"
 description = "Assertive check functions for defensive Python programming."
 readme = "README.md"
 license = "AGPL-3.0-or-later"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 authors = [{ name = "Michael Steinbaugh", email = "mike@steinbaugh.com" }]
 keywords = ["assertions", "checks", "validation"]
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
@@ -24,11 +23,46 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-develop = ["pytest", "ruff", "uv"]
+bio = ["anndata", "scanpy"]
+develop = [
+    "bumpver",
+    "coverage",
+    "interrogate",
+    "pyright[nodejs]",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "ty",
+    "uv",
+]
 
 [project.urls]
 Homepage = "https://github.com/acidgenomics/py-goalie"
 Repository = "https://github.com/acidgenomics/py-goalie"
+
+[tool.uv]
+package = true
+
+[tool.uv.build-backend]
+module-name = "goalie"
+module-root = "src"
+
+[tool.pyright]
+pythonVersion = "3.12"
+verboseOutput = true
+
+[tool.ty.environment]
+python-version = "3.12"
+
+[tool.ty.src]
+exclude = [".venv", "**/__pycache__", "**/.*"]
+
+[tool.ty.terminal]
+error-on-warning = true
+
+[tool.coverage.run]
+relative_files = true
+source = ["src/goalie"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -36,7 +70,7 @@ testpaths = ["tests"]
 [tool.ruff]
 indent-width = 4
 line-length = 100
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.format]
 docstring-code-format = true
@@ -46,25 +80,47 @@ quote-style = "double"
 [tool.ruff.lint]
 # List of rules: https://docs.astral.sh/ruff/rules/
 select = [
-    "ANN", # flake8-annotations
-    "B",   # flake8-bugbear
-    "C90", # mccabe
-    "D",   # pydocstyle
-    "E",   # pycodestyle
-    "F",   # PyFlakes
-    "FIX", # flake8-fixme
-    "I",   # isort
-    "N",   # pep8-naming
-    "NPY", # NumPy-specific rules,
-    "PL",  # pylint
-    "SIM", # flake8-simplify
-    "UP",  # pyupgrade
-    "W",   # pycodestyle
+    "ANN",  # flake8-annotations
+    "B",    # flake8-bugbear
+    "C90",  # mccabe
+    "D",    # pydocstyle
+    "E",    # pycodestyle
+    "F",    # PyFlakes
+    "FIX",  # flake8-fixme
+    "I",    # isort
+    "N",    # pep8-naming
+    "NPY",  # NumPy-specific rules
+    "PL",   # pylint
+    "PT",   # flake8-pytest-style
+    "RUF",  # ruff-specific rules
+    "SIM",  # flake8-simplify
+    "SLOT", # flake8-slots
+    "UP",   # pyupgrade
+    "W",    # pycodestyle
 ]
 ignore = [
     "D203", # one-blank-line-before-class
     "D213", # multi-line-summary-second-line
     "D401", # non-imperative-mood
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "ANN001",
+    "ANN201",
+    "ANN202",
+    "ANN204",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "F841",
+    "N801",
+    "N803",
+    "PLC0415",
+    "PLR2004",
+    "RUF012",
+    "RUF043",
 ]
 
 [tool.ruff.lint.isort]
@@ -80,6 +136,9 @@ section-order = [
     "local-folder",
 ]
 
+[tool.ruff.lint.mccabe]
+max-complexity = 30
+
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 100
 
@@ -89,6 +148,6 @@ convention = "numpy"
 [tool.ruff.lint.pylint]
 allow-magic-value-types = ["bytes", "int", "str"]
 max-args = 10
-
-[tool.setuptools.packages.find]
-where = ["src"]
+max-branches = 30
+max-positional-args = 2
+max-statements = 100

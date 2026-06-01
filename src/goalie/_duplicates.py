@@ -3,8 +3,6 @@
 Converted from R check-scalar-hasDuplicates.R.
 """
 
-from __future__ import annotations
-
 from collections import Counter
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name

@@ -3,8 +3,6 @@
 Converted from R check-scalar-sets.R.
 """
 
-from __future__ import annotations
-
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
 from goalie._length import has_length
 

@@ -5,12 +5,11 @@ check-scalar-isString.R, check-scalar-isNumber.R,
 check-scalar-isCharacter.R.
 """
 
-from __future__ import annotations
-
 import math
-from collections.abc import Sized
+from collections.abc import Sequence, Sized
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
+from goalie._vectorize import _check_all
 
 
 def is_scalar(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
@@ -285,6 +284,19 @@ def is_number(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
         GoalieCheckResult(ok=False, cause="''42'' is not numeric.")
     """
     return is_scalar_numeric(x, none_ok=none_ok)
+
+
+def all_are_integerish(x: Sequence[object]) -> GoalieCheckResult:
+    """Check whether all inputs are integerish (int or whole-number float).
+
+    Examples
+    --------
+        >>> all_are_integerish([1, 2.0, 3])
+        GoalieCheckResult(ok=True)
+        >>> all_are_integerish([1.5])
+        GoalieCheckResult(ok=False, cause=...)
+    """
+    return _check_all(x, is_scalar_integerish)
 
 
 def is_character(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
