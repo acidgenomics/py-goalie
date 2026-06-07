@@ -60,12 +60,49 @@ exclude = [".venv", "**/__pycache__", "**/.*"]
 [tool.ty.terminal]
 error-on-warning = true
 
+[tool.bumpver]
+commit = true
+commit_message = "Bump to {new_version}."
+current_version = "v0.1.0"
+push = false
+tag = false
+tag_message = "{new_version}"
+tag_scope = "default"
+version_pattern = "vMAJOR.MINOR.PATCH"
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{pep440_version}"']
+
 [tool.coverage.run]
 relative_files = true
 source = ["src/goalie"]
 
+[tool.interrogate]
+fail-under = 80
+ignore-init-method = true
+ignore-init-module = true
+ignore-property-decorators = false
+ignore-setters = false
+verbose = 2
+
+[tool.numpydoc_validation]
+checks = [
+    "all",  # report on all checks, except
+    "GL01", # do not require docstring formatting that conflicts with ruff
+    "GL02", # ...
+    "GL03", # ...
+    "GL08", # nor require __init__ docstrings (params documented in class docstring)
+    "ES01", # nor require an extended summary
+    "EX01", # nor examples
+    "PR02", # nor require parameter docs for dataclasses (fields are self-documenting)
+    "SA01", # nor a see also section
+    "SS06", # nor require the summary to fit on one line
+]
+override_SS05 = ['^Access ', '^Assess ', '^Process ']
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-v --tb=short"
 
 [tool.ruff]
 indent-width = 4
