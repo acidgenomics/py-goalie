@@ -8,6 +8,7 @@ Converted from R check-vector functions:
 
 import functools
 import re
+import subprocess
 import urllib.error
 import urllib.request
 from collections.abc import Sequence
@@ -145,3 +146,64 @@ def all_are_aws_s3_uris(x: Sequence[str]) -> GoalieCheckResult:
         GoalieCheckResult(ok=False, cause="Input has no elements.")
     """
     return _check_all(x, is_aws_s3_uri)
+
+
+def is_existing_aws_s3_uri(x: str) -> GoalieCheckResult:
+    """Check whether an AWS S3 URI exists (object is accessible).
+
+    Requires ``boto3`` (optional) or falls back to the AWS CLI
+    (``aws s3api head-object``).  Returns a failure result if neither
+    is available or if the object does not exist.
+
+    Parameters
+    ----------
+    x : str
+        S3 URI (e.g. ``s3://bucket/key``).
+
+    Examples
+    --------
+        >>> result = is_existing_aws_s3_uri("s3://nonexistent-bucket-xyz/key")
+        >>> isinstance(result, GoalieCheckResult)
+        True
+    """
+    result = is_aws_s3_uri(x)
+    if not result:
+        return result
+    # Parse bucket and key from s3://bucket/key
+    path = x[len("s3://"):]
+    parts = path.split("/", 1)
+    bucket = parts[0]
+    key = parts[1] if len(parts) > 1 else ""
+    # Try boto3 first (optional dependency).
+    try:
+        import boto3  # noqa: PLC0415
+
+        s3 = boto3.client("s3")
+        s3.head_object(Bucket=bucket, Key=key)
+        return _TRUE
+    except ImportError:
+        pass
+    except Exception:
+        return _false("S3 URI '%s' does not exist or is not accessible.", x)
+    # Fallback: AWS CLI.
+    try:
+        cmd = ["aws", "s3api", "head-object", "--bucket", bucket, "--key", key]
+        result_proc = subprocess.run(cmd, capture_output=True, check=False)
+        if result_proc.returncode == 0:
+            return _TRUE
+    except FileNotFoundError:
+        return _false(
+            "Cannot check S3 URI '%s': neither boto3 nor aws CLI available.", x
+        )
+    return _false("S3 URI '%s' does not exist or is not accessible.", x)
+
+
+def all_are_existing_aws_s3_uris(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all inputs are accessible AWS S3 URIs.
+
+    Examples
+    --------
+        >>> all_are_existing_aws_s3_uris([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_existing_aws_s3_uri)

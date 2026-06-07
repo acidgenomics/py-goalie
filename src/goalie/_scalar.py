@@ -299,6 +299,59 @@ def all_are_integerish(x: Sequence[object]) -> GoalieCheckResult:
     return _check_all(x, is_scalar_integerish)
 
 
+def is_integerish(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
+    """Check whether the input is integerish (scalar or vector of int/whole float).
+
+    For sequences, checks every element. For scalars, delegates to
+    :func:`is_scalar_integerish`.
+
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Examples
+    --------
+        >>> is_integerish(1)
+        GoalieCheckResult(ok=True)
+        >>> is_integerish([1, 2.0, 3])
+        GoalieCheckResult(ok=True)
+        >>> is_integerish([1, 1.5])
+        GoalieCheckResult(ok=False, cause=...)
+    """
+    if x is None:
+        return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
+    if isinstance(x, (list, tuple)):
+        return all_are_integerish(x)
+    return is_scalar_integerish(x, none_ok=none_ok)
+
+
+def is_int(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
+    """Check whether the input is a scalar integer-ish value.
+
+    Alias for :func:`is_scalar_integerish` with ``none_ok`` support.
+
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Examples
+    --------
+        >>> is_int(1)
+        GoalieCheckResult(ok=True)
+        >>> is_int(1.0)
+        GoalieCheckResult(ok=True)
+        >>> is_int(1.5)
+        GoalieCheckResult(ok=False, cause=...)
+    """
+    return is_scalar_integerish(x, none_ok=none_ok)
+
+
 def is_character(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     """Check whether the input contains a non-empty character value.
 
