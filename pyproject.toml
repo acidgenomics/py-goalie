@@ -24,6 +24,7 @@ classifiers = [
 
 [project.optional-dependencies]
 bio = ["anndata", "scanpy"]
+docs = ["myst-parser", "numpydoc", "pydata-sphinx-theme", "sphinx"]
 develop = [
     "bumpver",
     "coverage",
