@@ -7,6 +7,16 @@ from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
 from goalie._length import has_length
 
 
+def _to_set(obj: object, label: str) -> "set | GoalieCheckResult":
+    """Convert obj to a set, returning a failed result if not iterable."""
+    if isinstance(obj, set):
+        return obj
+    try:
+        return set(obj)  # type: ignore[arg-type]
+    except TypeError:
+        return _false("'%s' is not iterable.", label)
+
+
 def is_subset(x: object, y: object) -> GoalieCheckResult:
     """Check whether x is a subset of y.
 
@@ -20,8 +30,12 @@ def is_subset(x: object, y: object) -> GoalieCheckResult:
     ok = has_length(x)
     if not ok:
         return ok
-    x_set = set(x) if not isinstance(x, set) else x
-    y_set = set(y) if not isinstance(y, set) else y
+    x_set = _to_set(x, _to_name(x))
+    if isinstance(x_set, GoalieCheckResult):
+        return x_set
+    y_set = _to_set(y, _to_name(y))
+    if isinstance(y_set, GoalieCheckResult):
+        return y_set
     if not x_set.issubset(y_set):
         diff = x_set - y_set
         diff_str = ", ".join(str(d) for d in sorted(diff, key=str)[:10])
@@ -60,8 +74,12 @@ def are_disjoint_sets(x: object, y: object) -> GoalieCheckResult:
     ok = has_length(x)
     if not ok:
         return ok
-    x_set = set(x) if not isinstance(x, set) else x
-    y_set = set(y) if not isinstance(y, set) else y
+    x_set = _to_set(x, _to_name(x))
+    if isinstance(x_set, GoalieCheckResult):
+        return x_set
+    y_set = _to_set(y, _to_name(y))
+    if isinstance(y_set, GoalieCheckResult):
+        return y_set
     common = x_set & y_set
     if common:
         common_str = ", ".join(str(c) for c in sorted(common, key=str)[:10])
@@ -87,8 +105,12 @@ def are_intersecting_sets(x: object, y: object) -> GoalieCheckResult:
     ok = has_length(x)
     if not ok:
         return ok
-    x_set = set(x) if not isinstance(x, set) else x
-    y_set = set(y) if not isinstance(y, set) else y
+    x_set = _to_set(x, _to_name(x))
+    if isinstance(x_set, GoalieCheckResult):
+        return x_set
+    y_set = _to_set(y, _to_name(y))
+    if isinstance(y_set, GoalieCheckResult):
+        return y_set
     if not x_set & y_set:
         return _false(
             "'%s' and '%s' have 0 common elements.",
@@ -111,8 +133,12 @@ def are_set_equal(x: object, y: object) -> GoalieCheckResult:
     ok = has_length(x)
     if not ok:
         return ok
-    x_uniq = set(x)
-    y_uniq = set(y)
+    x_uniq = _to_set(x, _to_name(x))
+    if isinstance(x_uniq, GoalieCheckResult):
+        return x_uniq
+    y_uniq = _to_set(y, _to_name(y))
+    if isinstance(y_uniq, GoalieCheckResult):
+        return y_uniq
     if len(x_uniq) != len(y_uniq):
         return _false(
             "'%s' and '%s' have different numbers of elements (%d versus %d).",
@@ -122,9 +148,4 @@ def are_set_equal(x: object, y: object) -> GoalieCheckResult:
             len(y_uniq),
         )
     ok = is_subset(x, y)
-    if not ok:
-        return ok
-    ok = is_subset(y, x)
-    if not ok:
-        return ok
-    return _TRUE
+    return ok if not ok else is_subset(y, x)

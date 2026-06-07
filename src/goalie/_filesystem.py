@@ -153,7 +153,7 @@ def is_temp_file(x: str) -> GoalieCheckResult:
     result = is_file(x)
     if not result:
         return result
-    abspath = os.path.abspath(x)
+    abspath = os.path.realpath(x)
     tmpdir = os.path.realpath(tempfile.gettempdir())
     if abspath.startswith(tmpdir):
         return _TRUE
