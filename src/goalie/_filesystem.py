@@ -266,3 +266,72 @@ def all_have_access(x: Sequence[str], access: str = "r") -> GoalieCheckResult:
         GoalieCheckResult(ok=False, cause="Input has no elements.")
     """
     return _check_all(x, functools.partial(has_access, access=access))
+
+
+def is_existing(x: str) -> GoalieCheckResult:
+    """Check whether a path exists on the filesystem.
+
+    Matches R's ``isExisting``: returns True for files, directories,
+    symlinks, or any other existing filesystem entry.
+
+    Parameters
+    ----------
+    x : str
+        Path to check.
+
+    Examples
+    --------
+        >>> import tempfile, os
+        >>> f = tempfile.NamedTemporaryFile(delete=False)
+        >>> bool(is_existing(f.name))
+        True
+        >>> os.unlink(f.name)
+        >>> bool(is_existing(f.name))
+        False
+    """
+    if not isinstance(x, str):
+        return _false("'%s' is not a string.", _to_name(x))
+    if os.path.exists(x):
+        return _TRUE
+    return _false("'%s' does not exist.", x)
+
+
+def is_non_existing(x: str) -> GoalieCheckResult:
+    """Check whether a path does NOT exist on the filesystem.
+
+    Parameters
+    ----------
+    x : str
+        Path to check.
+
+    Examples
+    --------
+        >>> is_non_existing("/nonexistent/path/xyz")
+        GoalieCheckResult(ok=True)
+    """
+    result = is_existing(x)
+    if result:
+        return _false("'%s' already exists.", x)
+    return _TRUE
+
+
+def all_are_existing(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all paths exist on the filesystem.
+
+    Examples
+    --------
+        >>> all_are_existing([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_existing)
+
+
+def all_are_non_existing(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether none of the paths exist on the filesystem.
+
+    Examples
+    --------
+        >>> all_are_non_existing([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_non_existing)

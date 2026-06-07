@@ -3,12 +3,15 @@
 Converted from R system-check-scalar-* and system-check-vector-* functions.
 """
 
+import importlib.metadata
 import importlib.util
 import os
 import platform
+import re
 import shutil
 import socket
 import subprocess
+import sys
 from collections.abc import Sequence
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
@@ -256,3 +259,134 @@ def all_are_system_commands(x: Sequence[str]) -> GoalieCheckResult:
         GoalieCheckResult(ok=False, cause="Input has no elements.")
     """
     return _check_all(x, is_system_command)
+
+
+def is_rstudio() -> GoalieCheckResult:
+    """Check whether the session is running inside RStudio.
+
+    Checks for the ``RSTUDIO_USER_IDENTITY`` environment variable.
+
+    Examples
+    --------
+        >>> result = is_rstudio()
+        >>> isinstance(result, GoalieCheckResult)
+        True
+    """
+    if os.environ.get("RSTUDIO_USER_IDENTITY"):
+        return _TRUE
+    return _false("Session is not running inside RStudio.")
+
+
+def is_vscode() -> GoalieCheckResult:
+    """Check whether the session is running inside VS Code.
+
+    Checks for the ``VSCODE_INIT_R`` or ``TERM_PROGRAM`` environment variable.
+
+    Examples
+    --------
+        >>> result = is_vscode()
+        >>> isinstance(result, GoalieCheckResult)
+        True
+    """
+    if os.environ.get("VSCODE_INIT_R") or os.environ.get("TERM_PROGRAM") == "vscode":
+        return _TRUE
+    return _false("Session is not running inside VS Code.")
+
+
+def is_devel() -> GoalieCheckResult:
+    """Check whether the Python build is a development/pre-release version.
+
+    Returns True for alpha (a), beta (b), release candidate (rc), or
+    development (dev) builds.
+
+    Examples
+    --------
+        >>> result = is_devel()
+        >>> isinstance(result, GoalieCheckResult)
+        True
+    """
+    vi = sys.version_info
+    if vi.releaselevel != "final" or "dev" in sys.version.lower():
+        return _TRUE
+    return _false(
+        "Python version '%s' is not a development build.", sys.version.split()[0]
+    )
+
+
+def has_github_pat() -> GoalieCheckResult:
+    """Check whether a GitHub PAT is set in the environment.
+
+    Checks for the ``GITHUB_PAT``, ``GITHUB_TOKEN``, or
+    ``GH_TOKEN`` environment variables.
+
+    Examples
+    --------
+        >>> result = has_github_pat()
+        >>> isinstance(result, GoalieCheckResult)
+        True
+    """
+    for var in ("GITHUB_PAT", "GITHUB_TOKEN", "GH_TOKEN"):
+        if os.environ.get(var):
+            return _TRUE
+    return _false(
+        "No GitHub PAT found (checked GITHUB_PAT, GITHUB_TOKEN, GH_TOKEN)."
+    )
+
+
+def is_package_version(
+    x: str,
+    version: str,
+    op: str = ">=",
+) -> GoalieCheckResult:
+    """Check whether an installed package satisfies a version constraint.
+
+    Parameters
+    ----------
+    x : str
+        Package name.
+    version : str
+        Version string to compare against (e.g. ``"1.2.0"``).
+    op : str
+        Comparison operator: ``">="``, ``">"``, ``"=="``, ``"!="``,
+        ``"<"``, ``"<="``. Default ``">="``.
+
+    Examples
+    --------
+        >>> result = is_package_version("pip", "1.0.0")
+        >>> isinstance(result, GoalieCheckResult)
+        True
+    """
+    from importlib.metadata import PackageNotFoundError, version as _meta_version  # noqa: I001,PLC0415
+
+    def _parse(v: str) -> tuple[int, ...]:
+        # Parse only the numeric part before any alpha/beta/rc suffix.
+        m = re.match(r"^(\d+)(?:\.(\d+))?(?:\.(\d+))?", v)
+        if not m:
+            return (0,)
+        return tuple(int(g) for g in m.groups() if g is not None)
+
+    op_map = {
+        ">=": lambda a, b: a >= b,
+        ">": lambda a, b: a > b,
+        "==": lambda a, b: a == b,
+        "!=": lambda a, b: a != b,
+        "<": lambda a, b: a < b,
+        "<=": lambda a, b: a <= b,
+    }
+    if op not in op_map:
+        return _false("Unsupported operator '%s'.", op)
+    try:
+        installed_str = _meta_version(x)
+    except PackageNotFoundError:
+        return _false("Package '%s' is not installed.", x)
+    installed = _parse(installed_str)
+    required = _parse(version)
+    if op_map[op](installed, required):
+        return _TRUE
+    return _false(
+        "Package '%s' version %s does not satisfy %s %s.",
+        x,
+        installed_str,
+        op,
+        version,
+    )
