@@ -3,9 +3,9 @@
 Converted from R check-scalar-hasDuplicates.R.
 """
 
-from __future__ import annotations
-
 from collections import Counter
+from collections.abc import Iterable
+from typing import cast
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
 
@@ -20,15 +20,16 @@ def has_duplicates(x: object) -> GoalieCheckResult:
         >>> has_duplicates(["a", "b"])
         GoalieCheckResult(ok=False, cause="'list' has no duplicates.")
     """
+    x_iter = cast("Iterable[object]", x)
     try:
         seen: set[object] = set()
-        for item in x:
+        for item in x_iter:
             if item in seen:
                 return _TRUE
             seen.add(item)
     except TypeError:
         # Unhashable items: fall back to O(n^2) check.
-        items = list(x)
+        items = list(x_iter)
         for i, item in enumerate(items):
             if item in items[:i]:
                 return _TRUE
@@ -45,16 +46,17 @@ def has_no_duplicates(x: object) -> GoalieCheckResult:
         >>> has_no_duplicates(["a", "a", "b", "b"])
         GoalieCheckResult(ok=False, cause="'list' has duplicates at positions 2, 4.")
     """
+    x_iter = cast("Iterable[object]", x)
     dupe_positions: list[int] = []
     try:
         seen: set[object] = set()
-        for i, item in enumerate(x):
+        for i, item in enumerate(x_iter):
             if item in seen:
                 dupe_positions.append(i + 1)
             else:
                 seen.add(item)
     except TypeError:
-        items = list(x)
+        items = list(x_iter)
         for i, item in enumerate(items):
             if item in items[:i]:
                 dupe_positions.append(i + 1)
@@ -94,6 +96,6 @@ def is_duplicate(x: object) -> list[bool]:
         >>> is_duplicate(["a", "b", "c"])
         [False, False, False]
     """
-    items = list(x)
+    items = list(cast("Iterable[object]", x))
     counts = Counter(items)
     return [counts[item] > 1 for item in items]

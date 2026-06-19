@@ -3,11 +3,12 @@
 Converted from R check-vector-isInRange.R.
 """
 
-from __future__ import annotations
-
+import functools
 import math
+from collections.abc import Sequence
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
+from goalie._vectorize import _check_all
 
 
 def is_in_range(
@@ -185,3 +186,145 @@ def is_proportion(x: object) -> GoalieCheckResult:
         GoalieCheckResult(ok=False, cause=...)
     """
     return is_in_range(x, lower=0, upper=1, closed=(True, True))
+
+
+def all_are_in_range(
+    x: Sequence[object],
+    lower: float = -math.inf,
+    upper: float = math.inf,
+    closed: tuple[bool, bool] = (True, True),
+) -> GoalieCheckResult:
+    """Check whether all inputs are within the given range.
+
+    Examples
+    --------
+        >>> all_are_in_range([0.1, 0.5, 0.9], lower=0, upper=1)
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, functools.partial(is_in_range, lower=lower, upper=upper, closed=closed))
+
+
+def all_are_in_closed_range(
+    x: Sequence[object],
+    lower: float = -math.inf,
+    upper: float = math.inf,
+) -> GoalieCheckResult:
+    """Check whether all inputs are in closed range [lower, upper].
+
+    Examples
+    --------
+        >>> all_are_in_closed_range([0, 0.5, 1], lower=0, upper=1)
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, functools.partial(is_in_closed_range, lower=lower, upper=upper))
+
+
+def all_are_in_open_range(
+    x: Sequence[object],
+    lower: float = -math.inf,
+    upper: float = math.inf,
+) -> GoalieCheckResult:
+    """Check whether all inputs are in open range (lower, upper).
+
+    Examples
+    --------
+        >>> all_are_in_open_range([0.1, 0.5, 0.9], lower=0, upper=1)
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, functools.partial(is_in_open_range, lower=lower, upper=upper))
+
+
+def all_are_in_left_open_range(
+    x: Sequence[object],
+    lower: float = -math.inf,
+    upper: float = math.inf,
+) -> GoalieCheckResult:
+    """Check whether all inputs are in left-open range (lower, upper].
+
+    Examples
+    --------
+        >>> all_are_in_left_open_range([0.1, 0.5, 1], lower=0, upper=1)
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, functools.partial(is_in_left_open_range, lower=lower, upper=upper))
+
+
+def all_are_in_right_open_range(
+    x: Sequence[object],
+    lower: float = -math.inf,
+    upper: float = math.inf,
+) -> GoalieCheckResult:
+    """Check whether all inputs are in right-open range [lower, upper).
+
+    Examples
+    --------
+        >>> all_are_in_right_open_range([0, 0.5, 0.9], lower=0, upper=1)
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, functools.partial(is_in_right_open_range, lower=lower, upper=upper))
+
+
+def all_are_negative(x: Sequence[object]) -> GoalieCheckResult:
+    """Check whether all inputs are negative.
+
+    Examples
+    --------
+        >>> all_are_negative([-1, -2, -3])
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, is_negative)
+
+
+def all_are_positive(x: Sequence[object]) -> GoalieCheckResult:
+    """Check whether all inputs are positive.
+
+    Examples
+    --------
+        >>> all_are_positive([1, 2, 3])
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, is_positive)
+
+
+def all_are_non_negative(x: Sequence[object]) -> GoalieCheckResult:
+    """Check whether all inputs are non-negative.
+
+    Examples
+    --------
+        >>> all_are_non_negative([0, 1, 2])
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, is_non_negative)
+
+
+def all_are_non_positive(x: Sequence[object]) -> GoalieCheckResult:
+    """Check whether all inputs are non-positive.
+
+    Examples
+    --------
+        >>> all_are_non_positive([-1, 0])
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, is_non_positive)
+
+
+def all_are_percentage(x: Sequence[object]) -> GoalieCheckResult:
+    """Check whether all inputs are percentages (0-100).
+
+    Examples
+    --------
+        >>> all_are_percentage([0, 50, 100])
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, is_percentage)
+
+
+def all_are_proportion(x: Sequence[object]) -> GoalieCheckResult:
+    """Check whether all inputs are proportions (0-1).
+
+    Examples
+    --------
+        >>> all_are_proportion([0.0, 0.5, 1.0])
+        GoalieCheckResult(ok=True)
+    """
+    return _check_all(x, is_proportion)

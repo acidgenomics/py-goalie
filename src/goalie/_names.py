@@ -4,12 +4,15 @@ Converted from R check-scalar-hasNames.R, check-scalar-hasValidNames.R,
 check-scalar-validNames.R, check-scalar-hasRownames.R.
 """
 
-from __future__ import annotations
-
 import keyword
+from typing import Protocol, cast
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
 from goalie._duplicates import has_no_duplicates
+
+
+class _HasFields(Protocol):
+    _fields: tuple[str, ...]
 
 
 def has_names(x: object) -> GoalieCheckResult:
@@ -45,7 +48,7 @@ def has_names(x: object) -> GoalieCheckResult:
             return _false("The names of '%s' are empty.", _to_name(x))
         return _TRUE
     # Support objects with .__dict__ keys or named tuples.
-    if hasattr(x, "_fields") and len(x._fields) > 0:
+    if hasattr(x, "_fields") and len(cast("_HasFields", x)._fields) > 0:
         return _TRUE
     return _false("'%s' does not have names.", _to_name(x))
 
@@ -134,7 +137,7 @@ def valid_names(x: object) -> GoalieCheckResult:
         return ok
     invalid: list[str] = []
     for i, name in enumerate(x):
-        if not name.isidentifier() or keyword.iskeyword(name):
+        if not isinstance(name, str) or not name.isidentifier() or keyword.iskeyword(name):
             invalid.append(f"[{i}] {name}")
     if invalid:
         info = ", ".join(invalid[:10])
@@ -179,5 +182,5 @@ def _get_names(x: object) -> list[str] | None:
         except Exception:
             return None
     if hasattr(x, "_fields"):
-        return list(x._fields)
+        return list(cast("_HasFields", x)._fields)
     return None

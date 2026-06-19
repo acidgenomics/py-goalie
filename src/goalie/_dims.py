@@ -5,7 +5,8 @@ check-scalar-hasNonzeroRowsAndCols.R, check-scalar-hasUniqueCols.R,
 check-scalar-isOfDimension.R.
 """
 
-from __future__ import annotations
+from collections.abc import Iterable, Sequence
+from typing import cast
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
 
@@ -157,8 +158,9 @@ def has_nonzero_rows_and_cols(x: object) -> GoalieCheckResult:
     # Check for zero rows and cols using duck typing.
     try:
         # Works for numpy arrays and similar.
+        x_seq = cast("Sequence[Sequence[object]]", x)
         for i in range(nrow):
-            row_sum = sum(x[i])
+            row_sum = sum(cast("Iterable[float]", x_seq[i]))
             if row_sum == 0:
                 return _false(
                     "'%s' has a zero row at position %d.",
@@ -166,7 +168,7 @@ def has_nonzero_rows_and_cols(x: object) -> GoalieCheckResult:
                     i + 1,
                 )
         for j in range(ncol):
-            col_sum = sum(x[i][j] for i in range(nrow))
+            col_sum = sum(cast(float, x_seq[i][j]) for i in range(nrow))
             if col_sum == 0:
                 return _false(
                     "'%s' has a zero column at position %d.",
@@ -198,9 +200,10 @@ def has_unique_cols(x: object) -> GoalieCheckResult:
     if ncol < 2:
         return _false("'%s' doesn't have >= 2 columns.", _to_name(x))
     try:
+        x_seq = cast("Sequence[Sequence[object]]", x)
         cols: list[tuple[object, ...]] = []
         for j in range(ncol):
-            col = tuple(x[i][j] for i in range(shape[0]))
+            col = tuple(x_seq[i][j] for i in range(shape[0]))
             cols.append(col)
         seen: set[tuple[object, ...]] = set()
         dupes: list[int] = []

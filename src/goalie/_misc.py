@@ -5,8 +5,6 @@ check-scalar-isOrganism.R, check-scalar-isDark.R,
 check-scalar-formalCompress.R.
 """
 
-from __future__ import annotations
-
 import os
 import re
 
