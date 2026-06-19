@@ -7,7 +7,8 @@ name = "goalie"
 version = "0.1.0"
 description = "Assertive check functions for defensive Python programming."
 readme = "README.md"
-license = "AGPL-3.0-or-later"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.12"
 authors = [{ name = "Michael Steinbaugh", email = "mike@steinbaugh.com" }]
 keywords = ["assertions", "checks", "validation"]
@@ -40,6 +41,7 @@ develop = [
 [project.urls]
 Homepage = "https://github.com/acidgenomics/py-goalie"
 Repository = "https://github.com/acidgenomics/py-goalie"
+Changelog = "https://github.com/acidgenomics/py-goalie/blob/main/CHANGELOG.md"
 
 [tool.uv]
 package = true
@@ -51,12 +53,14 @@ module-root = "src"
 [tool.pyright]
 pythonVersion = "3.12"
 verboseOutput = true
+exclude = ["tests", ".venv"]
 
 [tool.ty.environment]
 python-version = "3.12"
+python = ".venv"
 
 [tool.ty.src]
-exclude = [".venv", "**/__pycache__", "**/.*"]
+exclude = [".venv", "**/__pycache__", "**/.*", "tests"]
 
 [tool.ty.terminal]
 error-on-warning = true
@@ -104,6 +108,7 @@ override_SS05 = ['^Access ', '^Assess ', '^Process ']
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --tb=short"
+pythonpath = ["src"]
 
 [tool.ruff]
 indent-width = 4

@@ -3,6 +3,9 @@
 Converted from R check-scalar-sets.R.
 """
 
+from collections.abc import Iterable
+from typing import cast
+
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
 from goalie._length import has_length
 
@@ -12,7 +15,7 @@ def _to_set(obj: object, label: str) -> "set | GoalieCheckResult":
     if isinstance(obj, set):
         return obj
     try:
-        return set(obj)  # type: ignore[arg-type]
+        return set(cast("Iterable[object]", obj))
     except TypeError:
         return _false("'%s' is not iterable.", label)
 

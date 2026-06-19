@@ -170,13 +170,13 @@ def is_existing_aws_s3_uri(x: str) -> GoalieCheckResult:
     if not result:
         return result
     # Parse bucket and key from s3://bucket/key
-    path = x[len("s3://"):]
+    path = x[len("s3://") :]
     parts = path.split("/", 1)
     bucket = parts[0]
     key = parts[1] if len(parts) > 1 else ""
     # Try boto3 first (optional dependency).
     try:
-        import boto3  # noqa: PLC0415
+        import boto3  # noqa: PLC0415  # type: ignore[import-not-found]  # ty: ignore[unresolved-import]
 
         s3 = boto3.client("s3")
         s3.head_object(Bucket=bucket, Key=key)
@@ -192,9 +192,7 @@ def is_existing_aws_s3_uri(x: str) -> GoalieCheckResult:
         if result_proc.returncode == 0:
             return _TRUE
     except FileNotFoundError:
-        return _false(
-            "Cannot check S3 URI '%s': neither boto3 nor aws CLI available.", x
-        )
+        return _false("Cannot check S3 URI '%s': neither boto3 nor aws CLI available.", x)
     return _false("S3 URI '%s' does not exist or is not accessible.", x)
 
 

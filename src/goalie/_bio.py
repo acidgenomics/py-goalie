@@ -6,8 +6,13 @@ import at module load time.
 """
 
 from collections.abc import Sequence
+from typing import Any, Protocol, cast
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
+
+
+class _AnnDataLike(Protocol):
+    obs: Any
 
 
 def _is_anndata(x: object) -> bool:
@@ -32,7 +37,7 @@ def has_clusters(x: object) -> GoalieCheckResult:
     """
     if not _is_anndata(x):
         return _false("'%s' does not appear to be an AnnData object.", _to_name(x))
-    obs = x.obs  # type: ignore[union-attr]
+    obs = cast("_AnnDataLike", x).obs
     cluster_keys = {"leiden", "louvain"}
     found = [k for k in cluster_keys if k in obs.columns]
     if found:
@@ -66,7 +71,7 @@ def has_metrics(
         return _false("'%s' does not appear to be an AnnData object.", _to_name(x))
     if obs_keys is None:
         obs_keys = ["n_genes_by_counts", "total_counts"]
-    obs = x.obs  # type: ignore[union-attr]
+    obs = cast("_AnnDataLike", x).obs
     missing = [k for k in obs_keys if k not in obs.columns]
     if missing:
         return _false(
@@ -97,7 +102,7 @@ def has_multiple_samples(
     """
     if not _is_anndata(x):
         return _false("'%s' does not appear to be an AnnData object.", _to_name(x))
-    obs = x.obs  # type: ignore[union-attr]
+    obs = cast("_AnnDataLike", x).obs
     if sample_key not in obs.columns:
         return _false(
             "'%s' has no '%s' column in .obs.",

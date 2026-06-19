@@ -5,6 +5,7 @@ check-scalar-areSameLength.R, check-scalar-allAreAtomic.R.
 """
 
 from collections.abc import Sized
+from typing import cast
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
 
@@ -22,7 +23,7 @@ def has_length(x: object, n: int | None = None) -> GoalieCheckResult:
         GoalieCheckResult(ok=True)
     """
     try:
-        length = len(x)
+        length = len(cast("Sized", x))
     except TypeError:
         return _false("'%s' has no length.", _to_name(x))
     if n is None:
@@ -105,7 +106,7 @@ def are_same_length(x: object, y: object) -> GoalieCheckResult:
     ok = has_length(y)
     if not ok:
         return ok
-    if len(x) != len(y):
+    if len(cast("Sized", x)) != len(cast("Sized", y)):
         return _false(
             "'%s' doesn't have the same length as '%s'.",
             _to_name(x),
