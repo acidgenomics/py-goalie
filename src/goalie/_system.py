@@ -308,9 +308,7 @@ def is_devel() -> GoalieCheckResult:
     vi = sys.version_info
     if vi.releaselevel != "final" or "dev" in sys.version.lower():
         return _TRUE
-    return _false(
-        "Python version '%s' is not a development build.", sys.version.split()[0]
-    )
+    return _false("Python version '%s' is not a development build.", sys.version.split()[0])
 
 
 def has_github_pat() -> GoalieCheckResult:
@@ -328,9 +326,7 @@ def has_github_pat() -> GoalieCheckResult:
     for var in ("GITHUB_PAT", "GITHUB_TOKEN", "GH_TOKEN"):
         if os.environ.get(var):
             return _TRUE
-    return _false(
-        "No GitHub PAT found (checked GITHUB_PAT, GITHUB_TOKEN, GH_TOKEN)."
-    )
+    return _false("No GitHub PAT found (checked GITHUB_PAT, GITHUB_TOKEN, GH_TOKEN).")
 
 
 def is_package_version(
