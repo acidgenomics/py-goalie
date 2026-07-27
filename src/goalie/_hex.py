@@ -3,11 +3,11 @@
 Converted from R check-vector-isHexColor.R.
 """
 
-from __future__ import annotations
-
 import re
+from collections.abc import Sequence
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
+from goalie._vectorize import _check_all
 
 
 def is_hex_color(x: str) -> GoalieCheckResult:
@@ -36,3 +36,16 @@ def is_hex_color(x: str) -> GoalieCheckResult:
     ):
         return _TRUE
     return _false("'%s' is not a hex color code.", x)
+
+
+def all_are_hex_colors(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all inputs are hex color codes.
+
+    Examples
+    --------
+        >>> all_are_hex_colors(["#FF0000", "#00FF00"])
+        GoalieCheckResult(ok=True)
+        >>> all_are_hex_colors([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_hex_color)

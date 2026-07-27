@@ -10,14 +10,15 @@ Converted from R check-vector functions:
 - check-vector-isGitRepo.R
 """
 
-from __future__ import annotations
-
+import functools
 import os
 import re
 import subprocess
 import tempfile
+from collections.abc import Sequence
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
+from goalie._vectorize import _check_all
 
 _COMPRESS_EXT_PATTERN = (
     r"\.(gz|bz2|xz|zip|7z|lz|lzma|zst|"
@@ -152,7 +153,7 @@ def is_temp_file(x: str) -> GoalieCheckResult:
     result = is_file(x)
     if not result:
         return result
-    abspath = os.path.abspath(x)
+    abspath = os.path.realpath(x)
     tmpdir = os.path.realpath(tempfile.gettempdir())
     if abspath.startswith(tmpdir):
         return _TRUE
@@ -188,3 +189,149 @@ def is_git_repo(x: str) -> GoalieCheckResult:
     except FileNotFoundError:
         pass
     return _false("'%s' is not a git repository.", x)
+
+
+def all_are_files(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all inputs are existing files.
+
+    Examples
+    --------
+        >>> all_are_files([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_file)
+
+
+def all_are_directories(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all inputs are existing directories.
+
+    Examples
+    --------
+        >>> all_are_directories([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_directory)
+
+
+def all_are_compressed_files(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all inputs are compressed files.
+
+    Examples
+    --------
+        >>> all_are_compressed_files([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_compressed_file)
+
+
+def all_are_symlinks(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all inputs are symbolic links.
+
+    Examples
+    --------
+        >>> all_are_symlinks([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_symlink)
+
+
+def all_are_temp_files(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all inputs are temporary files.
+
+    Examples
+    --------
+        >>> all_are_temp_files([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_temp_file)
+
+
+def all_are_git_repos(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all inputs are git repositories.
+
+    Examples
+    --------
+        >>> all_are_git_repos([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_git_repo)
+
+
+def all_have_access(x: Sequence[str], access: str = "r") -> GoalieCheckResult:
+    """Check whether all inputs have the given access rights.
+
+    Examples
+    --------
+        >>> all_have_access([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, functools.partial(has_access, access=access))
+
+
+def is_existing(x: str) -> GoalieCheckResult:
+    """Check whether a path exists on the filesystem.
+
+    Matches R's ``isExisting``: returns True for files, directories,
+    symlinks, or any other existing filesystem entry.
+
+    Parameters
+    ----------
+    x : str
+        Path to check.
+
+    Examples
+    --------
+        >>> import tempfile, os
+        >>> f = tempfile.NamedTemporaryFile(delete=False)
+        >>> bool(is_existing(f.name))
+        True
+        >>> os.unlink(f.name)
+        >>> bool(is_existing(f.name))
+        False
+    """
+    if not isinstance(x, str):
+        return _false("'%s' is not a string.", _to_name(x))
+    if os.path.exists(x):
+        return _TRUE
+    return _false("'%s' does not exist.", x)
+
+
+def is_non_existing(x: str) -> GoalieCheckResult:
+    """Check whether a path does NOT exist on the filesystem.
+
+    Parameters
+    ----------
+    x : str
+        Path to check.
+
+    Examples
+    --------
+        >>> is_non_existing("/nonexistent/path/xyz")
+        GoalieCheckResult(ok=True)
+    """
+    result = is_existing(x)
+    if result:
+        return _false("'%s' already exists.", x)
+    return _TRUE
+
+
+def all_are_existing(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether all paths exist on the filesystem.
+
+    Examples
+    --------
+        >>> all_are_existing([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_existing)
+
+
+def all_are_non_existing(x: Sequence[str]) -> GoalieCheckResult:
+    """Check whether none of the paths exist on the filesystem.
+
+    Examples
+    --------
+        >>> all_are_non_existing([])
+        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    """
+    return _check_all(x, is_non_existing)

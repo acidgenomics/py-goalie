@@ -4,8 +4,6 @@ Converted from R check-scalar-isAll.R, check-scalar-isAny.R,
 check-scalar-isVectorish.R.
 """
 
-from __future__ import annotations
-
 from collections.abc import Sequence, Set
 
 from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name

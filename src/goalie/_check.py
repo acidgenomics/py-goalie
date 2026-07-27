@@ -1,7 +1,5 @@
 """Core check result infrastructure for goalie."""
 
-from __future__ import annotations
-
 
 class GoalieCheckResult:
     """Result from a goalie check function.
