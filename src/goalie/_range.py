@@ -19,12 +19,8 @@ def is_in_range(
 ) -> GoalieCheckResult:
     """Check whether the input is in range.
 
-    Args:
-        x: Numeric value.
-        lower: Lower bound.
-        upper: Upper bound.
-        closed: Tuple of bools indicating if lower and upper
-            bounds are inclusive.
+    ``closed`` is a tuple of bools indicating if the lower and upper bounds
+    are inclusive.
 
     Examples
     --------

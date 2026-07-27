@@ -29,10 +29,8 @@ _COMPRESS_EXT_PATTERN = (
 def has_access(x: str, access: str = "r") -> GoalieCheckResult:
     """Check file system access rights.
 
-    Args:
-        x: File or directory path.
-        access: String containing 'r' (read), 'w' (write),
-            and/or 'x' (execute).
+    ``access`` is a string containing 'r' (read), 'w' (write), and/or 'x'
+    (execute).
 
     Examples
     --------

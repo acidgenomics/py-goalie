@@ -4,7 +4,7 @@ from goalie._check import GoalieCheckResult
 
 
 class GoalieAssertionError(AssertionError):
-    """Raised by assert_ when one or more checks fail.
+    """Raised by ``assert_`` when one or more checks fail.
 
     Parameters
     ----------
