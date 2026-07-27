@@ -46,6 +46,12 @@ Changelog = "https://github.com/acidgenomics/py-goalie/blob/main/CHANGELOG.md"
 
 [tool.uv]
 package = true
+override-dependencies = [
+  # pillow is transitive via the bio extra (scanpy -> seaborn -> matplotlib ->
+  # pillow). Floor it above the CVE-fixed version so the lock cannot regress
+  # into vulnerable releases (GHSA-9hw9-ch79-4vh6 and others fixed in 12.3.0).
+  "pillow>=12.3.0",
+]
 
 [tool.uv.build-backend]
 module-name = "goalie"
