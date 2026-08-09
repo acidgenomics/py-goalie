@@ -32,13 +32,25 @@ def has_access(x: str, access: str = "r") -> GoalieCheckResult:
     ``access`` is a string containing 'r' (read), 'w' (write), and/or 'x'
     (execute).
 
+    Parameters
+    ----------
+    x : str
+        Path to check.
+    access : str
+        Access rights to check, as a string of ``r``/``w``/``x``.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> import os
-        >>> has_access(os.path.expanduser("~"))
-        GoalieCheckResult(ok=True)
-        >>> has_access("nonexistent_path_xyz")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> import os
+    >>> has_access(os.path.expanduser("~"))
+    GoalieCheckResult(ok=True)
+    >>> has_access("nonexistent_path_xyz")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -58,13 +70,20 @@ def has_access(x: str, access: str = "r") -> GoalieCheckResult:
 def is_file(x: str) -> GoalieCheckResult:
     """Check whether the input is a file.
 
-    Args:
-        x: File path.
+    Parameters
+    ----------
+    x : str
+        File path.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_file("nonexistent_file.txt")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_file("nonexistent_file.txt")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -78,16 +97,23 @@ def is_file(x: str) -> GoalieCheckResult:
 def is_directory(x: str) -> GoalieCheckResult:
     """Check whether the input is a directory.
 
-    Args:
-        x: Directory path.
+    Parameters
+    ----------
+    x : str
+        Directory path.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> import os
-        >>> is_directory(os.path.expanduser("~"))
-        GoalieCheckResult(ok=True)
-        >>> is_directory("nonexistent_dir_xyz")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> import os
+    >>> is_directory(os.path.expanduser("~"))
+    GoalieCheckResult(ok=True)
+    >>> is_directory("nonexistent_dir_xyz")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -101,13 +127,20 @@ def is_compressed_file(x: str) -> GoalieCheckResult:
 
     Checks based on file extension.
 
-    Args:
-        x: File path.
+    Parameters
+    ----------
+    x : str
+        File path.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_compressed_file("sample.fastq")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_compressed_file("sample.fastq")
+    GoalieCheckResult(ok=False, cause=...)
     """
     result = is_file(x)
     if not result:
@@ -120,13 +153,20 @@ def is_compressed_file(x: str) -> GoalieCheckResult:
 def is_symlink(x: str) -> GoalieCheckResult:
     """Check whether the input is a symbolic link.
 
-    Args:
-        x: File or directory path.
+    Parameters
+    ----------
+    x : str
+        File or directory path.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_symlink("nonexistent_link")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_symlink("nonexistent_link")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -140,13 +180,20 @@ def is_symlink(x: str) -> GoalieCheckResult:
 def is_temp_file(x: str) -> GoalieCheckResult:
     """Check whether the input is a temporary file.
 
-    Args:
-        x: File path.
+    Parameters
+    ----------
+    x : str
+        File path.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_temp_file("/home/user/data.csv")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_temp_file("/home/user/data.csv")
+    GoalieCheckResult(ok=False, cause=...)
     """
     result = is_file(x)
     if not result:
@@ -161,13 +208,20 @@ def is_temp_file(x: str) -> GoalieCheckResult:
 def is_git_repo(x: str) -> GoalieCheckResult:
     """Check whether the input is a git repository.
 
-    Args:
-        x: Directory path.
+    Parameters
+    ----------
+    x : str
+        Directory path.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_git_repo("/tmp")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_git_repo("/tmp")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -192,10 +246,20 @@ def is_git_repo(x: str) -> GoalieCheckResult:
 def all_are_files(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether all inputs are existing files.
 
+    Parameters
+    ----------
+    x : sequence of str
+        File paths to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_files([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_are_files([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, is_file)
 
@@ -203,10 +267,20 @@ def all_are_files(x: Sequence[str]) -> GoalieCheckResult:
 def all_are_directories(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether all inputs are existing directories.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Directory paths to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_directories([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_are_directories([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, is_directory)
 
@@ -214,10 +288,20 @@ def all_are_directories(x: Sequence[str]) -> GoalieCheckResult:
 def all_are_compressed_files(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether all inputs are compressed files.
 
+    Parameters
+    ----------
+    x : sequence of str
+        File paths to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_compressed_files([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_are_compressed_files([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, is_compressed_file)
 
@@ -225,10 +309,20 @@ def all_are_compressed_files(x: Sequence[str]) -> GoalieCheckResult:
 def all_are_symlinks(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether all inputs are symbolic links.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Paths to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_symlinks([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_are_symlinks([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, is_symlink)
 
@@ -236,10 +330,20 @@ def all_are_symlinks(x: Sequence[str]) -> GoalieCheckResult:
 def all_are_temp_files(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether all inputs are temporary files.
 
+    Parameters
+    ----------
+    x : sequence of str
+        File paths to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_temp_files([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_are_temp_files([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, is_temp_file)
 
@@ -247,10 +351,20 @@ def all_are_temp_files(x: Sequence[str]) -> GoalieCheckResult:
 def all_are_git_repos(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether all inputs are git repositories.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Directory paths to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_git_repos([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_are_git_repos([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, is_git_repo)
 
@@ -258,10 +372,22 @@ def all_are_git_repos(x: Sequence[str]) -> GoalieCheckResult:
 def all_have_access(x: Sequence[str], access: str = "r") -> GoalieCheckResult:
     """Check whether all inputs have the given access rights.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Paths to check.
+    access : str
+        Access rights to check, as a string of ``r``/``w``/``x``.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_have_access([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_have_access([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, functools.partial(has_access, access=access))
 
@@ -277,15 +403,20 @@ def is_existing(x: str) -> GoalieCheckResult:
     x : str
         Path to check.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> import tempfile, os
-        >>> f = tempfile.NamedTemporaryFile(delete=False)
-        >>> bool(is_existing(f.name))
-        True
-        >>> os.unlink(f.name)
-        >>> bool(is_existing(f.name))
-        False
+    >>> import tempfile, os
+    >>> f = tempfile.NamedTemporaryFile(delete=False)
+    >>> bool(is_existing(f.name))
+    True
+    >>> os.unlink(f.name)
+    >>> bool(is_existing(f.name))
+    False
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -302,10 +433,15 @@ def is_non_existing(x: str) -> GoalieCheckResult:
     x : str
         Path to check.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_non_existing("/nonexistent/path/xyz")
-        GoalieCheckResult(ok=True)
+    >>> is_non_existing("/nonexistent/path/xyz")
+    GoalieCheckResult(ok=True)
     """
     result = is_existing(x)
     if result:
@@ -316,10 +452,20 @@ def is_non_existing(x: str) -> GoalieCheckResult:
 def all_are_existing(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether all paths exist on the filesystem.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Paths to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_existing([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_are_existing([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, is_existing)
 
@@ -327,9 +473,19 @@ def all_are_existing(x: Sequence[str]) -> GoalieCheckResult:
 def all_are_non_existing(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether none of the paths exist on the filesystem.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Paths to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_non_existing([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_are_non_existing([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, is_non_existing)

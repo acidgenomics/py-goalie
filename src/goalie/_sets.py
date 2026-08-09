@@ -23,12 +23,24 @@ def _to_set(obj: object, label: str) -> "set | GoalieCheckResult":
 def is_subset(x: object, y: object) -> GoalieCheckResult:
     """Check whether x is a subset of y.
 
+    Parameters
+    ----------
+    x : object
+        First iterable to compare.
+    y : object
+        Second iterable to compare.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_subset(["a"], ["a", "b"])
-        GoalieCheckResult(ok=True)
-        >>> is_subset(["c"], ["a", "b"])
-        GoalieCheckResult(ok=False, cause="'list' has elements not in 'list': c.")
+    >>> is_subset(["a"], ["a", "b"])
+    GoalieCheckResult(ok=True)
+    >>> is_subset(["c"], ["a", "b"])
+    GoalieCheckResult(ok=False, cause="'list' has elements not in 'list': c.")
     """
     ok = has_length(x)
     if not ok:
@@ -54,12 +66,24 @@ def is_subset(x: object, y: object) -> GoalieCheckResult:
 def is_superset(x: object, y: object) -> GoalieCheckResult:
     """Check whether x is a superset of y.
 
+    Parameters
+    ----------
+    x : object
+        First iterable to compare.
+    y : object
+        Second iterable to compare.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_superset(["a", "b", "c"], ["a", "b"])
-        GoalieCheckResult(ok=True)
-        >>> is_superset(["a"], ["a", "b"])
-        GoalieCheckResult(ok=False, cause="'list' has elements not in 'list': b.")
+    >>> is_superset(["a", "b", "c"], ["a", "b"])
+    GoalieCheckResult(ok=True)
+    >>> is_superset(["a"], ["a", "b"])
+    GoalieCheckResult(ok=False, cause="'list' has elements not in 'list': b.")
     """
     return is_subset(x=y, y=x)
 
@@ -67,12 +91,24 @@ def is_superset(x: object, y: object) -> GoalieCheckResult:
 def are_disjoint_sets(x: object, y: object) -> GoalieCheckResult:
     """Check whether x and y are disjoint sets (no common elements).
 
+    Parameters
+    ----------
+    x : object
+        First iterable to compare.
+    y : object
+        Second iterable to compare.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> are_disjoint_sets(["a", "b"], ["c", "d"])
-        GoalieCheckResult(ok=True)
-        >>> are_disjoint_sets(["a", "b"], ["b", "a"])
-        GoalieCheckResult(ok=False, cause="'list' and 'list' have common elements: a, b.")
+    >>> are_disjoint_sets(["a", "b"], ["c", "d"])
+    GoalieCheckResult(ok=True)
+    >>> are_disjoint_sets(["a", "b"], ["b", "a"])
+    GoalieCheckResult(ok=False, cause="'list' and 'list' have common elements: a, b.")
     """
     ok = has_length(x)
     if not ok:
@@ -98,12 +134,24 @@ def are_disjoint_sets(x: object, y: object) -> GoalieCheckResult:
 def are_intersecting_sets(x: object, y: object) -> GoalieCheckResult:
     """Check whether x and y have at least one common element.
 
+    Parameters
+    ----------
+    x : object
+        First iterable to compare.
+    y : object
+        Second iterable to compare.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> are_intersecting_sets(["a", "b"], ["b", "c"])
-        GoalieCheckResult(ok=True)
-        >>> are_intersecting_sets(["a", "b"], ["c", "d"])
-        GoalieCheckResult(ok=False, cause="'list' and 'list' have 0 common elements.")
+    >>> are_intersecting_sets(["a", "b"], ["b", "c"])
+    GoalieCheckResult(ok=True)
+    >>> are_intersecting_sets(["a", "b"], ["c", "d"])
+    GoalieCheckResult(ok=False, cause="'list' and 'list' have 0 common elements.")
     """
     ok = has_length(x)
     if not ok:
@@ -126,12 +174,24 @@ def are_intersecting_sets(x: object, y: object) -> GoalieCheckResult:
 def are_set_equal(x: object, y: object) -> GoalieCheckResult:
     """Check whether x and y are set-equal (same elements, ignoring order).
 
+    Parameters
+    ----------
+    x : object
+        First iterable to compare.
+    y : object
+        Second iterable to compare.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> are_set_equal(["a", "b"], ["b", "a"])
-        GoalieCheckResult(ok=True)
-        >>> are_set_equal(["a", "b"], ["b", "c"])
-        GoalieCheckResult(ok=False, cause="'list' has elements not in 'list': a.")
+    >>> are_set_equal(["a", "b"], ["b", "a"])
+    GoalieCheckResult(ok=True)
+    >>> are_set_equal(["a", "b"], ["b", "c"])
+    GoalieCheckResult(ok=False, cause="'list' has elements not in 'list': a.")
     """
     ok = has_length(x)
     if not ok:

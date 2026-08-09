@@ -30,10 +30,15 @@ def has_clusters(x: object) -> GoalieCheckResult:
     x : object
         AnnData-like object.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_clusters("not_anndata")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> has_clusters("not_anndata")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not _is_anndata(x):
         return _false("'%s' does not appear to be an AnnData object.", _to_name(x))
@@ -62,10 +67,15 @@ def has_metrics(
     obs_keys : Sequence[str] | None
         Keys to check. Defaults to ``["n_genes_by_counts", "total_counts"]``.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_metrics("not_anndata")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> has_metrics("not_anndata")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not _is_anndata(x):
         return _false("'%s' does not appear to be an AnnData object.", _to_name(x))
@@ -95,10 +105,15 @@ def has_multiple_samples(
     sample_key : str
         Column name in ``.obs`` that identifies samples.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_multiple_samples("not_anndata")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> has_multiple_samples("not_anndata")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not _is_anndata(x):
         return _false("'%s' does not appear to be an AnnData object.", _to_name(x))

@@ -17,10 +17,22 @@ def has_dims(x: object, n: tuple[int, ...] | None = None) -> GoalieCheckResult:
     Works with numpy arrays, pandas DataFrames, and any object with
     a ``shape`` attribute.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+    n : tuple of int, optional
+        Expected dimensions. If provided, checks for an exact match.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_dims([[1, 2], [3, 4]])
-        GoalieCheckResult(ok=False, cause="'list' has no dimensions.")
+    >>> has_dims([[1, 2], [3, 4]])
+    GoalieCheckResult(ok=False, cause="'list' has no dimensions.")
     """
     shape = _get_shape(x)
     if shape is None:
@@ -38,10 +50,22 @@ def has_dims(x: object, n: tuple[int, ...] | None = None) -> GoalieCheckResult:
 def has_rows(x: object, n: int | None = None) -> GoalieCheckResult:
     """Check whether the input has rows.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+    n : int, optional
+        Expected row count. If provided, checks for an exact match.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_rows({"shape": (3, 2)})
-        GoalieCheckResult(ok=False, cause="'dict' has no row count.")
+    >>> has_rows({"shape": (3, 2)})
+    GoalieCheckResult(ok=False, cause="'dict' has no row count.")
     """
     nr = _get_nrow(x)
     if nr is None:
@@ -62,10 +86,22 @@ def has_rows(x: object, n: int | None = None) -> GoalieCheckResult:
 def has_cols(x: object, n: int | None = None) -> GoalieCheckResult:
     """Check whether the input has columns.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+    n : int, optional
+        Expected column count. If provided, checks for an exact match.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_cols({"shape": (3, 2)})
-        GoalieCheckResult(ok=False, cause="'dict' has no column count.")
+    >>> has_cols({"shape": (3, 2)})
+    GoalieCheckResult(ok=False, cause="'dict' has no column count.")
     """
     nc = _get_ncol(x)
     if nc is None:
@@ -89,10 +125,20 @@ def has_dimnames(x: object) -> GoalieCheckResult:
     For pandas DataFrames, checks that both index and columns are
     non-empty and contain non-empty strings.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_dimnames([1, 2])
-        GoalieCheckResult(ok=False, cause="'list' has no dimension names.")
+    >>> has_dimnames([1, 2])
+    GoalieCheckResult(ok=False, cause="'list' has no dimension names.")
     """
     index = getattr(x, "index", None)
     columns = getattr(x, "columns", None)
@@ -118,10 +164,20 @@ def has_dimnames(x: object) -> GoalieCheckResult:
 def has_colnames(x: object) -> GoalieCheckResult:
     """Check whether the input has column names.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_colnames([1, 2])
-        GoalieCheckResult(ok=False, cause="'list' has no column names.")
+    >>> has_colnames([1, 2])
+    GoalieCheckResult(ok=False, cause="'list' has no column names.")
     """
     columns = getattr(x, "columns", None)
     if columns is None:
@@ -143,10 +199,20 @@ def has_nonzero_rows_and_cols(x: object) -> GoalieCheckResult:
     Checks that no row or column sums to zero. Works with numpy arrays
     and any 2D array-like with ``sum`` method or that supports indexing.
 
+    Parameters
+    ----------
+    x : object
+        2D array-like object to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_nonzero_rows_and_cols([[1, 2], [3, 4]])
-        GoalieCheckResult(ok=False, cause="'list' is not a 2D array.")
+    >>> has_nonzero_rows_and_cols([[1, 2], [3, 4]])
+    GoalieCheckResult(ok=False, cause="'list' is not a 2D array.")
     """
     shape = _get_shape(x)
     if shape is None or len(shape) != 2:
@@ -188,10 +254,20 @@ def has_unique_cols(x: object) -> GoalieCheckResult:
 
     Checks a 2D array for duplicated columns.
 
+    Parameters
+    ----------
+    x : object
+        2D array-like object to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_unique_cols([[1, 1], [2, 2]])
-        GoalieCheckResult(ok=False, cause="'list' is not a 2D array.")
+    >>> has_unique_cols([[1, 1], [2, 2]])
+    GoalieCheckResult(ok=False, cause="'list' is not a 2D array.")
     """
     shape = _get_shape(x)
     if shape is None or len(shape) != 2:
@@ -230,10 +306,26 @@ def has_unique_cols(x: object) -> GoalieCheckResult:
 def is_of_dimension(x: object, n: tuple[int, ...] | None) -> GoalieCheckResult:
     """Check whether the input contains specific dimensions.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+    n : tuple of int or None
+        Expected dimensions, or ``None`` to require ``x`` have no shape.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_of_dimension({"shape": (2, 2)}, n=None)
-        GoalieCheckResult(ok=False, cause="'dict' has no dimensions.")
+    >>> import types
+    >>> obj = types.SimpleNamespace(shape=(2, 2))
+    >>> is_of_dimension(obj, n=(2, 2))
+    GoalieCheckResult(ok=True)
+    >>> is_of_dimension(obj, n=(3, 3))
+    GoalieCheckResult(ok=False, cause="Dimensions 1, 2 of 'SimpleNamespace' are incorrect.")
     """
     shape = _get_shape(x)
     if n is None:

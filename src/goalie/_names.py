@@ -21,12 +21,22 @@ def has_names(x: object) -> GoalieCheckResult:
     For dicts, checks for non-empty keys. For objects with a ``columns``
     attribute (e.g. pandas DataFrames), checks column names.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_names({"a": 1, "b": 2})
-        GoalieCheckResult(ok=True)
-        >>> has_names([1, 2])
-        GoalieCheckResult(ok=False, cause="'list' does not have names.")
+    >>> has_names({"a": 1, "b": 2})
+    GoalieCheckResult(ok=True)
+    >>> has_names([1, 2])
+    GoalieCheckResult(ok=False, cause="'list' does not have names.")
     """
     if isinstance(x, dict):
         return (
@@ -59,12 +69,22 @@ def has_valid_names(x: object) -> GoalieCheckResult:
     For dicts, checks that all keys are valid Python identifiers.
     For objects with ``columns``, checks column names.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_valid_names({"a": 1, "b": 2})
-        GoalieCheckResult(ok=True)
-        >>> has_valid_names({"1bad": 1})
-        GoalieCheckResult(ok=False, cause="'dict' has invalid names: [0] 1bad.")
+    >>> has_valid_names({"a": 1, "b": 2})
+    GoalieCheckResult(ok=True)
+    >>> has_valid_names({"1bad": 1})
+    GoalieCheckResult(ok=False, cause="'list' has invalid names: [0] 1bad.")
     """
     ok = has_names(x)
     if not ok:
@@ -81,10 +101,20 @@ def has_valid_dimnames(x: object) -> GoalieCheckResult:
     Works with objects that have ``index`` and ``columns`` attributes
     (e.g. pandas DataFrames).
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_valid_dimnames({"a": 1})
-        GoalieCheckResult(ok=True)
+    >>> has_valid_dimnames({"a": 1})
+    GoalieCheckResult(ok=True)
     """
     # Check row names (index).
     index = getattr(x, "index", None)
@@ -117,12 +147,22 @@ def valid_names(x: object) -> GoalieCheckResult:
     Checks that all strings are valid Python identifiers that are not
     keywords. No duplicates allowed.
 
+    Parameters
+    ----------
+    x : object
+        List or tuple of strings to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> valid_names(["sample_1", "sample_2"])
-        GoalieCheckResult(ok=True)
-        >>> valid_names(["1bad", "good"])
-        GoalieCheckResult(ok=False, cause="'list' has invalid names: [0] 1bad.")
+    >>> valid_names(["sample_1", "sample_2"])
+    GoalieCheckResult(ok=True)
+    >>> valid_names(["1bad", "good"])
+    GoalieCheckResult(ok=False, cause="'list' has invalid names: [0] 1bad.")
     """
     if not isinstance(x, (list, tuple)):
         return _false("'%s' is not a list or tuple.", _to_name(x))
@@ -151,10 +191,20 @@ def has_rownames(x: object) -> GoalieCheckResult:
     For pandas DataFrames, checks whether the index contains
     meaningful (non-default integer) row names.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_rownames({"a": 1})
-        GoalieCheckResult(ok=False, cause="'dict' does not have row names.")
+    >>> has_rownames({"a": 1})
+    GoalieCheckResult(ok=False, cause="'dict' does not have row names.")
     """
     index = getattr(x, "index", None)
     if index is None:

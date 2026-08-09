@@ -6,6 +6,14 @@ class GoalieCheckResult:
 
     Evaluates to True on success, False on failure.
     Failed results carry a ``cause`` message.
+
+    Parameters
+    ----------
+    ok : bool
+        Whether the check passed.
+    cause : str
+        Message describing why the check failed. Ignored when ``ok`` is
+        ``True``.
     """
 
     __slots__ = ("_cause", "_ok")
@@ -24,7 +32,13 @@ class GoalieCheckResult:
 
     @property
     def cause(self) -> str:
-        """Cause of check failure."""
+        """Cause of check failure.
+
+        Returns
+        -------
+        str
+            Failure message, or an empty string if the check passed.
+        """
         return self._cause
 
 
@@ -33,7 +47,14 @@ _TRUE = GoalieCheckResult(ok=True)
 
 
 def _false(msg: str, *args: object) -> GoalieCheckResult:
-    """Create a failed check result with cause message."""
+    """Create a failed check result with cause message.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Failed result, with ``cause`` set to ``msg`` (``%``-formatted
+        against ``args`` if provided).
+    """
     if args:
         msg = msg % args
     return GoalieCheckResult(ok=False, cause=msg)

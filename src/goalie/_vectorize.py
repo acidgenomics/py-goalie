@@ -29,7 +29,7 @@ def _check_all(
     --------
         >>> from goalie._filesystem import is_file
         >>> _check_all([], is_file)
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+        GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     try:
         items = list(x)

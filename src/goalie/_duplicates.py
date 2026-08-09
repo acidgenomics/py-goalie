@@ -13,12 +13,22 @@ from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
 def has_duplicates(x: object) -> GoalieCheckResult:
     """Check whether the input has duplicates.
 
+    Parameters
+    ----------
+    x : iterable
+        Any iterable (e.g. list, tuple).
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_duplicates(["a", "a"])
-        GoalieCheckResult(ok=True)
-        >>> has_duplicates(["a", "b"])
-        GoalieCheckResult(ok=False, cause="'list' has no duplicates.")
+    >>> has_duplicates(["a", "a"])
+    GoalieCheckResult(ok=True)
+    >>> has_duplicates(["a", "b"])
+    GoalieCheckResult(ok=False, cause="'list' has no duplicates.")
     """
     x_iter = cast("Iterable[object]", x)
     try:
@@ -39,12 +49,22 @@ def has_duplicates(x: object) -> GoalieCheckResult:
 def has_no_duplicates(x: object) -> GoalieCheckResult:
     """Check whether the input has no duplicates.
 
+    Parameters
+    ----------
+    x : iterable
+        Any iterable (e.g. list, tuple).
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_no_duplicates(["a", "b"])
-        GoalieCheckResult(ok=True)
-        >>> has_no_duplicates(["a", "a", "b", "b"])
-        GoalieCheckResult(ok=False, cause="'list' has duplicates at positions 2, 4.")
+    >>> has_no_duplicates(["a", "b"])
+    GoalieCheckResult(ok=True)
+    >>> has_no_duplicates(["a", "a", "b", "b"])
+    GoalieCheckResult(ok=False, cause="'list' has duplicates at positions 2, 4.")
     """
     x_iter = cast("Iterable[object]", x)
     dupe_positions: list[int] = []
@@ -81,20 +101,23 @@ def is_duplicate(x: object) -> list[bool]:
 
     Converted from R check-vector-isDuplicate.R.
 
-    Args:
-        x: Any iterable (e.g. list, tuple).
+    Parameters
+    ----------
+    x : iterable
+        Any iterable (e.g. list, tuple).
 
     Returns
     -------
-        List of bools, one per element. ``True`` if the
-        element appears more than once.
+    list of bool
+        One value per element. ``True`` if the element appears more than
+        once.
 
     Examples
     --------
-        >>> is_duplicate(["a", "a", "b", "b", "c", "d"])
-        [True, True, True, True, False, False]
-        >>> is_duplicate(["a", "b", "c"])
-        [False, False, False]
+    >>> is_duplicate(["a", "a", "b", "b", "c", "d"])
+    [True, True, True, True, False, False]
+    >>> is_duplicate(["a", "b", "c"])
+    [False, False, False]
     """
     items = list(cast("Iterable[object]", x))
     counts = Counter(items)

@@ -16,17 +16,24 @@ def is_hex_color(x: str) -> GoalieCheckResult:
     Matches standard 6-digit hex colors with optional 2-digit
     alpha suffix (e.g. ``#FF0000`` or ``#FF0000FF``).
 
-    Args:
-        x: Input string.
+    Parameters
+    ----------
+    x : str
+        Input string.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_hex_color("#FF0000")
-        GoalieCheckResult(ok=True)
-        >>> is_hex_color("#FF0000FF")
-        GoalieCheckResult(ok=True)
-        >>> is_hex_color("red")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_hex_color("#FF0000")
+    GoalieCheckResult(ok=True)
+    >>> is_hex_color("#FF0000FF")
+    GoalieCheckResult(ok=True)
+    >>> is_hex_color("red")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -41,11 +48,21 @@ def is_hex_color(x: str) -> GoalieCheckResult:
 def all_are_hex_colors(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether all inputs are hex color codes.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Strings to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_hex_colors(["#FF0000", "#00FF00"])
-        GoalieCheckResult(ok=True)
-        >>> all_are_hex_colors([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_are_hex_colors(["#FF0000", "#00FF00"])
+    GoalieCheckResult(ok=True)
+    >>> all_are_hex_colors([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, is_hex_color)

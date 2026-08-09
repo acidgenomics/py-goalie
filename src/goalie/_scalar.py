@@ -19,14 +19,26 @@ def is_scalar(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     complex, str, bytes) are always scalar. For sized containers (list,
     tuple, dict, set), checks ``len(x) == 1``.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_scalar("a")
-        GoalieCheckResult(ok=True)
-        >>> is_scalar(None)
-        GoalieCheckResult(ok=False, cause="'None' is None.")
-        >>> is_scalar(["a", "b"])
-        GoalieCheckResult(ok=False, cause="'list' doesn't have a length of 1.")
+    >>> is_scalar("a")
+    GoalieCheckResult(ok=True)
+    >>> is_scalar(None)
+    GoalieCheckResult(ok=False, cause="'None' is None.")
+    >>> is_scalar(["a", "b"])
+    GoalieCheckResult(ok=False, cause="'list' doesn't have a length of 1.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -44,12 +56,24 @@ def is_scalar_atomic(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
 
     Atomic types in Python: bool, int, float, complex, str, bytes.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_scalar_atomic("hello")
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_atomic([1])
-        GoalieCheckResult(ok=False, cause="'list' is not atomic.")
+    >>> is_scalar_atomic("hello")
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_atomic([1])
+    GoalieCheckResult(ok=False, cause="'list' is not atomic.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -64,12 +88,24 @@ def is_scalar_atomic(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
 def is_scalar_bool(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     """Check whether the input is a scalar boolean.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_scalar_bool(True)
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_bool(1)
-        GoalieCheckResult(ok=False, cause="'1' is not bool.")
+    >>> is_scalar_bool(True)
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_bool(1)
+    GoalieCheckResult(ok=False, cause="'1' is not bool.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -81,12 +117,24 @@ def is_scalar_bool(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
 def is_scalar_float(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     """Check whether the input is a scalar float.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_scalar_float(1.0)
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_float(1)
-        GoalieCheckResult(ok=False, cause="'1' is not float.")
+    >>> is_scalar_float(1.0)
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_float(1)
+    GoalieCheckResult(ok=False, cause="'1' is not float.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -98,12 +146,24 @@ def is_scalar_float(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
 def is_scalar_integer(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     """Check whether the input is a scalar integer (not bool).
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_scalar_integer(1)
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_integer(True)
-        GoalieCheckResult(ok=False, cause="'True' is not integer.")
+    >>> is_scalar_integer(1)
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_integer(True)
+    GoalieCheckResult(ok=False, cause="'True' is not integer.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -117,14 +177,26 @@ def is_scalar_integerish(x: object, *, none_ok: bool = False) -> GoalieCheckResu
 
     Returns True for int or float values that are whole numbers (e.g. 1.0).
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_scalar_integerish(1)
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_integerish(1.0)
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_integerish(1.5)
-        GoalieCheckResult(ok=False, cause="'1.5' is not integerish.")
+    >>> is_scalar_integerish(1)
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_integerish(1.0)
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_integerish(1.5)
+    GoalieCheckResult(ok=False, cause="'1.5' is not integerish.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -140,12 +212,24 @@ def is_scalar_integerish(x: object, *, none_ok: bool = False) -> GoalieCheckResu
 def is_scalar_list(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     """Check whether the input is a list of length 1.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_scalar_list([1])
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_list([1, 2])
-        GoalieCheckResult(ok=False, cause="'list' doesn't have a length of 1.")
+    >>> is_scalar_list([1])
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_list([1, 2])
+    GoalieCheckResult(ok=False, cause="'list' doesn't have a length of 1.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -159,14 +243,26 @@ def is_scalar_list(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
 def is_scalar_numeric(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     """Check whether the input is a scalar numeric (int or float, not bool).
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_scalar_numeric(1)
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_numeric(1.5)
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_numeric(True)
-        GoalieCheckResult(ok=False, cause="'True' is not numeric.")
+    >>> is_scalar_numeric(1)
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_numeric(1.5)
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_numeric(True)
+    GoalieCheckResult(ok=False, cause="'True' is not numeric.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -178,14 +274,26 @@ def is_scalar_numeric(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
 def is_scalar_sequence(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     """Check whether the input is a sequence (list or tuple) of length 1.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_scalar_sequence([1])
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_sequence((1,))
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_sequence("a")
-        GoalieCheckResult(ok=False, cause="''a'' is not a sequence.")
+    >>> is_scalar_sequence([1])
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_sequence((1,))
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_sequence("a")
+    GoalieCheckResult(ok=False, cause="''a'' is not a sequence.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -199,12 +307,24 @@ def is_scalar_sequence(x: object, *, none_ok: bool = False) -> GoalieCheckResult
 def is_scalar_str(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     """Check whether the input is a scalar string.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_scalar_str("hello")
-        GoalieCheckResult(ok=True)
-        >>> is_scalar_str(1)
-        GoalieCheckResult(ok=False, cause="'1' is not str.")
+    >>> is_scalar_str("hello")
+    GoalieCheckResult(ok=True)
+    >>> is_scalar_str(1)
+    GoalieCheckResult(ok=False, cause="'1' is not str.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -216,12 +336,22 @@ def is_scalar_str(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
 def is_non_scalar(x: object) -> GoalieCheckResult:
     """Check whether the input is non-scalar (not length 1).
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_non_scalar([1, 2])
-        GoalieCheckResult(ok=True)
-        >>> is_non_scalar("a")
-        GoalieCheckResult(ok=False, cause="''a'' is scalar (has a length of 1).")
+    >>> is_non_scalar([1, 2])
+    GoalieCheckResult(ok=True)
+    >>> is_non_scalar("a")
+    GoalieCheckResult(ok=False, cause="''a'' is scalar (has a length of 1).")
     """
     if is_scalar(x):
         return _false("'%s' is scalar (has a length of 1).", _to_name(x))
@@ -233,14 +363,24 @@ def is_flag(x: object) -> GoalieCheckResult:
 
     ``None`` is not considered a valid flag.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_flag(True)
-        GoalieCheckResult(ok=True)
-        >>> is_flag(False)
-        GoalieCheckResult(ok=True)
-        >>> is_flag(1)
-        GoalieCheckResult(ok=False, cause="'1' is not a boolean flag (True/False).")
+    >>> is_flag(True)
+    GoalieCheckResult(ok=True)
+    >>> is_flag(False)
+    GoalieCheckResult(ok=True)
+    >>> is_flag(1)
+    GoalieCheckResult(ok=False, cause="'1' is not a boolean flag (True/False).")
     """
     if not isinstance(x, bool):
         return _false("'%s' is not a boolean flag (True/False).", _to_name(x))
@@ -250,14 +390,26 @@ def is_flag(x: object) -> GoalieCheckResult:
 def is_string(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     """Check whether the input contains a non-empty string scalar.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_string("hello")
-        GoalieCheckResult(ok=True)
-        >>> is_string("")
-        GoalieCheckResult(ok=False, cause="'''' contains empty string.")
-        >>> is_string(1)
-        GoalieCheckResult(ok=False, cause="'1' is not str.")
+    >>> is_string("hello")
+    GoalieCheckResult(ok=True)
+    >>> is_string("")
+    GoalieCheckResult(ok=False, cause="'''' contains empty string.")
+    >>> is_string(1)
+    GoalieCheckResult(ok=False, cause="'1' is not str.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -276,12 +428,24 @@ def is_number(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
 
     Alias for ``is_scalar_numeric``.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_number(42)
-        GoalieCheckResult(ok=True)
-        >>> is_number("42")
-        GoalieCheckResult(ok=False, cause="''42'' is not numeric.")
+    >>> is_number(42)
+    GoalieCheckResult(ok=True)
+    >>> is_number("42")
+    GoalieCheckResult(ok=False, cause="''42'' is not numeric.")
     """
     return is_scalar_numeric(x, none_ok=none_ok)
 
@@ -289,12 +453,22 @@ def is_number(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
 def all_are_integerish(x: Sequence[object]) -> GoalieCheckResult:
     """Check whether all inputs are integerish (int or whole-number float).
 
+    Parameters
+    ----------
+    x : sequence
+        Values to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_integerish([1, 2.0, 3])
-        GoalieCheckResult(ok=True)
-        >>> all_are_integerish([1.5])
-        GoalieCheckResult(ok=False, cause=...)
+    >>> all_are_integerish([1, 2.0, 3])
+    GoalieCheckResult(ok=True)
+    >>> all_are_integerish([1.5])
+    GoalieCheckResult(ok=False, cause=...)
     """
     return _check_all(x, is_scalar_integerish)
 
@@ -312,14 +486,19 @@ def is_integerish(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     none_ok : bool
         If ``True``, ``None`` passes.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_integerish(1)
-        GoalieCheckResult(ok=True)
-        >>> is_integerish([1, 2.0, 3])
-        GoalieCheckResult(ok=True)
-        >>> is_integerish([1, 1.5])
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_integerish(1)
+    GoalieCheckResult(ok=True)
+    >>> is_integerish([1, 2.0, 3])
+    GoalieCheckResult(ok=True)
+    >>> is_integerish([1, 1.5])
+    GoalieCheckResult(ok=False, cause=...)
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))
@@ -340,14 +519,19 @@ def is_int(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     none_ok : bool
         If ``True``, ``None`` passes.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_int(1)
-        GoalieCheckResult(ok=True)
-        >>> is_int(1.0)
-        GoalieCheckResult(ok=True)
-        >>> is_int(1.5)
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_int(1)
+    GoalieCheckResult(ok=True)
+    >>> is_int(1.0)
+    GoalieCheckResult(ok=True)
+    >>> is_int(1.5)
+    GoalieCheckResult(ok=False, cause=...)
     """
     return is_scalar_integerish(x, none_ok=none_ok)
 
@@ -358,16 +542,28 @@ def is_character(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     Checks for a string or a list/tuple of strings. Must have length,
     cannot contain empty strings.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        If ``True``, ``None`` passes.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_character("hello")
-        GoalieCheckResult(ok=True)
-        >>> is_character(["a", "b"])
-        GoalieCheckResult(ok=True)
-        >>> is_character("")
-        GoalieCheckResult(ok=False, cause="'''' has empty string at position 0.")
-        >>> is_character([])
-        GoalieCheckResult(ok=False, cause="'list' has length 0.")
+    >>> is_character("hello")
+    GoalieCheckResult(ok=True)
+    >>> is_character(["a", "b"])
+    GoalieCheckResult(ok=True)
+    >>> is_character("")
+    GoalieCheckResult(ok=False, cause="'''' has empty string at position 0.")
+    >>> is_character([])
+    GoalieCheckResult(ok=False, cause="'list' has length 0.")
     """
     if x is None:
         return _TRUE if none_ok else _false("'%s' is None.", _to_name(x))

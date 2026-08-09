@@ -13,14 +13,26 @@ from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
 def has_length(x: object, n: int | None = None) -> GoalieCheckResult:
     """Check whether the input has a non-zero or defined length.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+    n : int, optional
+        Expected length. If provided, checks for an exact match.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_length([1, 2, 3])
-        GoalieCheckResult(ok=True)
-        >>> has_length([])
-        GoalieCheckResult(ok=False, cause="'list' has length 0.")
-        >>> has_length("ab", n=2)
-        GoalieCheckResult(ok=True)
+    >>> has_length([1, 2, 3])
+    GoalieCheckResult(ok=True)
+    >>> has_length([])
+    GoalieCheckResult(ok=False, cause="'list' has length 0.")
+    >>> has_length("ab", n=2)
+    GoalieCheckResult(ok=True)
     """
     try:
         length = len(cast("Sized", x))
@@ -38,14 +50,26 @@ def has_length(x: object, n: int | None = None) -> GoalieCheckResult:
 def has_elements(x: object, n: int | None = None) -> GoalieCheckResult:
     """Check whether the input has elements.
 
+    Parameters
+    ----------
+    x : object
+        Object to check.
+    n : int, optional
+        Expected element count. If provided, checks for an exact match.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_elements("hello")
-        GoalieCheckResult(ok=True)
-        >>> has_elements("hello", n=5)
-        GoalieCheckResult(ok=True)
-        >>> has_elements([])
-        GoalieCheckResult(ok=False, cause="'list' has 0 elements.")
+    >>> has_elements("hello")
+    GoalieCheckResult(ok=True)
+    >>> has_elements([1, 2, 3], n=3)
+    GoalieCheckResult(ok=True)
+    >>> has_elements([])
+    GoalieCheckResult(ok=False, cause="'list' has 0 elements.")
     """
     n_x = n_elements(x)
     if n is None:
@@ -68,12 +92,22 @@ def n_elements(x: object) -> int:
 
     For nested structures, recursively counts leaf elements.
 
+    Parameters
+    ----------
+    x : object
+        Object to count elements in.
+
+    Returns
+    -------
+    int
+        Number of leaf elements.
+
     Examples
     --------
-        >>> n_elements([1, 2, 3])
-        3
-        >>> n_elements({"a": [1, 2], "b": [3]})
-        3
+    >>> n_elements([1, 2, 3])
+    3
+    >>> n_elements({"a": [1, 2], "b": [3]})
+    3
     """
     if isinstance(x, dict):
         return sum(n_elements(v) for v in x.values())
@@ -93,12 +127,24 @@ def n_elements(x: object) -> int:
 def are_same_length(x: object, y: object) -> GoalieCheckResult:
     """Check whether the inputs have the same length.
 
+    Parameters
+    ----------
+    x : object
+        First object to compare.
+    y : object
+        Second object to compare.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> are_same_length([1, 2], [3, 4])
-        GoalieCheckResult(ok=True)
-        >>> are_same_length([1], [2, 3])
-        GoalieCheckResult(ok=False, cause="'list' doesn't have the same length as 'list'.")
+    >>> are_same_length([1, 2], [3, 4])
+    GoalieCheckResult(ok=True)
+    >>> are_same_length([1], [2, 3])
+    GoalieCheckResult(ok=False, cause="'list' doesn't have the same length as 'list'.")
     """
     ok = has_length(x)
     if not ok:
@@ -120,12 +166,22 @@ def all_are_atomic(x: object) -> GoalieCheckResult:
 
     Atomic types: bool, int, float, complex, str, bytes.
 
+    Parameters
+    ----------
+    x : object
+        Iterable (list, tuple, set, frozenset, or dict) to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_atomic({"a": "foo", "b": "bar"})
-        GoalieCheckResult(ok=True)
-        >>> all_are_atomic({"a": "x", "b": []})
-        GoalieCheckResult(ok=False, cause="Not all elements in 'dict' are atomic.")
+    >>> all_are_atomic({"a": "foo", "b": "bar"})
+    GoalieCheckResult(ok=True)
+    >>> all_are_atomic({"a": "x", "b": []})
+    GoalieCheckResult(ok=False, cause="Not all elements in 'dict' are atomic.")
     """
     ok = has_length(x)
     if not ok:

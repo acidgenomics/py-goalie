@@ -30,17 +30,26 @@ def is_equal_to(
 ) -> GoalieCheckResult:
     """Check whether x is equal to y (within tolerance).
 
-    Args:
-        x: Numeric value.
-        y: Numeric value to compare against.
-        tolerance: Tolerance for floating-point comparison.
+    Parameters
+    ----------
+    x : numeric
+        Numeric value.
+    y : numeric
+        Numeric value to compare against.
+    tolerance : float
+        Tolerance for floating-point comparison.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_equal_to(1, 1.0)
-        GoalieCheckResult(ok=True)
-        >>> is_equal_to(1, 2)
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_equal_to(1, 1.0)
+    GoalieCheckResult(ok=True)
+    >>> is_equal_to(1, 2)
+    GoalieCheckResult(ok=False, cause=...)
     """
     diff = abs(cast(float, x - y))
     if diff <= tolerance:
@@ -55,15 +64,24 @@ def is_not_equal_to(
 ) -> GoalieCheckResult:
     """Check whether x is not equal to y.
 
-    Args:
-        x: Numeric value.
-        y: Numeric value to compare against.
-        tolerance: Tolerance for floating-point comparison.
+    Parameters
+    ----------
+    x : numeric
+        Numeric value.
+    y : numeric
+        Numeric value to compare against.
+    tolerance : float
+        Tolerance for floating-point comparison.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_not_equal_to(2, 1)
-        GoalieCheckResult(ok=True)
+    >>> is_not_equal_to(2, 1)
+    GoalieCheckResult(ok=True)
     """
     diff = abs(cast(float, x - y))
     if diff > tolerance:
@@ -74,12 +92,24 @@ def is_not_equal_to(
 def is_greater_than(x: _SupportsComparison, y: _SupportsComparison) -> GoalieCheckResult:
     """Check whether x is greater than y.
 
+    Parameters
+    ----------
+    x : numeric
+        Numeric value.
+    y : numeric
+        Numeric value to compare against.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_greater_than(2, 1)
-        GoalieCheckResult(ok=True)
-        >>> is_greater_than(1, 2)
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_greater_than(2, 1)
+    GoalieCheckResult(ok=True)
+    >>> is_greater_than(1, 2)
+    GoalieCheckResult(ok=False, cause=...)
     """
     if x > y:
         return _TRUE
@@ -92,10 +122,22 @@ def is_greater_than_or_equal_to(
 ) -> GoalieCheckResult:
     """Check whether x is greater than or equal to y.
 
+    Parameters
+    ----------
+    x : numeric
+        Numeric value.
+    y : numeric
+        Numeric value to compare against.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_greater_than_or_equal_to(1, 1)
-        GoalieCheckResult(ok=True)
+    >>> is_greater_than_or_equal_to(1, 1)
+    GoalieCheckResult(ok=True)
     """
     if x >= y:
         return _TRUE
@@ -105,10 +147,22 @@ def is_greater_than_or_equal_to(
 def is_less_than(x: _SupportsComparison, y: _SupportsComparison) -> GoalieCheckResult:
     """Check whether x is less than y.
 
+    Parameters
+    ----------
+    x : numeric
+        Numeric value.
+    y : numeric
+        Numeric value to compare against.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_less_than(-1, 0)
-        GoalieCheckResult(ok=True)
+    >>> is_less_than(-1, 0)
+    GoalieCheckResult(ok=True)
     """
     if x < y:
         return _TRUE
@@ -121,10 +175,22 @@ def is_less_than_or_equal_to(
 ) -> GoalieCheckResult:
     """Check whether x is less than or equal to y.
 
+    Parameters
+    ----------
+    x : numeric
+        Numeric value.
+    y : numeric
+        Numeric value to compare against.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_less_than_or_equal_to(1, 3)
-        GoalieCheckResult(ok=True)
+    >>> is_less_than_or_equal_to(1, 3)
+    GoalieCheckResult(ok=True)
     """
     if x <= y:
         return _TRUE
@@ -138,10 +204,24 @@ def all_are_equal_to(
 ) -> GoalieCheckResult:
     """Check whether all inputs are equal to y.
 
+    Parameters
+    ----------
+    x : sequence
+        Values to check.
+    y : numeric
+        Numeric value to compare against.
+    tolerance : float
+        Tolerance for floating-point comparison.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_equal_to([1, 1, 1], 1)
-        GoalieCheckResult(ok=True)
+    >>> all_are_equal_to([1, 1, 1], 1)
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, functools.partial(is_equal_to, y=y, tolerance=tolerance))
 
@@ -153,10 +233,24 @@ def all_are_not_equal_to(
 ) -> GoalieCheckResult:
     """Check whether no inputs are equal to y.
 
+    Parameters
+    ----------
+    x : sequence
+        Values to check.
+    y : numeric
+        Numeric value to compare against.
+    tolerance : float
+        Tolerance for floating-point comparison.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_not_equal_to([1, 2, 3], 0)
-        GoalieCheckResult(ok=True)
+    >>> all_are_not_equal_to([1, 2, 3], 0)
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, functools.partial(is_not_equal_to, y=y, tolerance=tolerance))
 
@@ -167,10 +261,22 @@ def all_are_greater_than(
 ) -> GoalieCheckResult:
     """Check whether all inputs are greater than y.
 
+    Parameters
+    ----------
+    x : sequence
+        Values to check.
+    y : numeric
+        Numeric value to compare against.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_greater_than([2, 3, 4], 1)
-        GoalieCheckResult(ok=True)
+    >>> all_are_greater_than([2, 3, 4], 1)
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, functools.partial(is_greater_than, y=y))
 
@@ -181,10 +287,22 @@ def all_are_greater_than_or_equal_to(
 ) -> GoalieCheckResult:
     """Check whether all inputs are greater than or equal to y.
 
+    Parameters
+    ----------
+    x : sequence
+        Values to check.
+    y : numeric
+        Numeric value to compare against.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_greater_than_or_equal_to([1, 2, 3], 1)
-        GoalieCheckResult(ok=True)
+    >>> all_are_greater_than_or_equal_to([1, 2, 3], 1)
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, functools.partial(is_greater_than_or_equal_to, y=y))
 
@@ -195,10 +313,22 @@ def all_are_less_than(
 ) -> GoalieCheckResult:
     """Check whether all inputs are less than y.
 
+    Parameters
+    ----------
+    x : sequence
+        Values to check.
+    y : numeric
+        Numeric value to compare against.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_less_than([-1, 0], 1)
-        GoalieCheckResult(ok=True)
+    >>> all_are_less_than([-1, 0], 1)
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, functools.partial(is_less_than, y=y))
 
@@ -209,9 +339,21 @@ def all_are_less_than_or_equal_to(
 ) -> GoalieCheckResult:
     """Check whether all inputs are less than or equal to y.
 
+    Parameters
+    ----------
+    x : sequence
+        Values to check.
+    y : numeric
+        Numeric value to compare against.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_less_than_or_equal_to([1, 2, 3], 3)
-        GoalieCheckResult(ok=True)
+    >>> all_are_less_than_or_equal_to([1, 2, 3], 3)
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, functools.partial(is_less_than_or_equal_to, y=y))

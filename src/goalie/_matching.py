@@ -17,16 +17,24 @@ def is_matching_regex(
 ) -> GoalieCheckResult:
     """Check whether the string matches a regex pattern.
 
-    Args:
-        x: Input string.
-        pattern: Regular expression pattern.
+    Parameters
+    ----------
+    x : str
+        Input string.
+    pattern : str
+        Regular expression pattern.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_matching_regex("foobar", "^f")
-        GoalieCheckResult(ok=True)
-        >>> is_matching_regex("foobar", "^b")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_matching_regex("foobar", "^f")
+    GoalieCheckResult(ok=True)
+    >>> is_matching_regex("foobar", "^b")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -41,16 +49,24 @@ def is_matching_fixed(
 ) -> GoalieCheckResult:
     """Check whether the string contains a fixed (literal) pattern.
 
-    Args:
-        x: Input string.
-        pattern: Fixed string to search for.
+    Parameters
+    ----------
+    x : str
+        Input string.
+    pattern : str
+        Fixed string to search for.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_matching_fixed("foobar", "bar")
-        GoalieCheckResult(ok=True)
-        >>> is_matching_fixed("foobar", "baz")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_matching_fixed("foobar", "bar")
+    GoalieCheckResult(ok=True)
+    >>> is_matching_fixed("foobar", "baz")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -65,16 +81,24 @@ def is_not_matching_regex(
 ) -> GoalieCheckResult:
     """Check whether the string does NOT match a regex pattern.
 
-    Args:
-        x: Input string.
-        pattern: Regular expression pattern.
+    Parameters
+    ----------
+    x : str
+        Input string.
+    pattern : str
+        Regular expression pattern.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_not_matching_regex("foobar", "^b")
-        GoalieCheckResult(ok=True)
-        >>> is_not_matching_regex("foobar", "^f")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_not_matching_regex("foobar", "^b")
+    GoalieCheckResult(ok=True)
+    >>> is_not_matching_regex("foobar", "^f")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -89,16 +113,24 @@ def is_not_matching_fixed(
 ) -> GoalieCheckResult:
     """Check whether the string does NOT contain a fixed (literal) pattern.
 
-    Args:
-        x: Input string.
-        pattern: Fixed string to search for.
+    Parameters
+    ----------
+    x : str
+        Input string.
+    pattern : str
+        Fixed string to search for.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
 
     Examples
     --------
-        >>> is_not_matching_fixed("foo", "bar")
-        GoalieCheckResult(ok=True)
-        >>> is_not_matching_fixed("foobar", "bar")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_not_matching_fixed("foo", "bar")
+    GoalieCheckResult(ok=True)
+    >>> is_not_matching_fixed("foobar", "bar")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -113,10 +145,22 @@ def all_are_matching_regex(
 ) -> GoalieCheckResult:
     """Check whether all inputs match a regex pattern.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Strings to check.
+    pattern : str
+        Regular expression pattern.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_matching_regex(["foo", "foobar"], "^foo")
-        GoalieCheckResult(ok=True)
+    >>> all_are_matching_regex(["foo", "foobar"], "^foo")
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, functools.partial(is_matching_regex, pattern=pattern))
 
@@ -127,10 +171,22 @@ def all_are_matching_fixed(
 ) -> GoalieCheckResult:
     """Check whether all inputs contain a fixed pattern.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Strings to check.
+    pattern : str
+        Fixed string to search for.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_matching_fixed(["foobar", "foo"], "foo")
-        GoalieCheckResult(ok=True)
+    >>> all_are_matching_fixed(["foobar", "foo"], "foo")
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, functools.partial(is_matching_fixed, pattern=pattern))
 
@@ -141,10 +197,22 @@ def all_are_not_matching_regex(
 ) -> GoalieCheckResult:
     """Check whether no inputs match a regex pattern.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Strings to check.
+    pattern : str
+        Regular expression pattern.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_not_matching_regex(["bar", "baz"], "^foo")
-        GoalieCheckResult(ok=True)
+    >>> all_are_not_matching_regex(["bar", "baz"], "^foo")
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, functools.partial(is_not_matching_regex, pattern=pattern))
 
@@ -155,9 +223,21 @@ def all_are_not_matching_fixed(
 ) -> GoalieCheckResult:
     """Check whether no inputs contain a fixed pattern.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Strings to check.
+    pattern : str
+        Fixed string to search for.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_not_matching_fixed(["bar", "baz"], "foo")
-        GoalieCheckResult(ok=True)
+    >>> all_are_not_matching_fixed(["bar", "baz"], "foo")
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, functools.partial(is_not_matching_fixed, pattern=pattern))

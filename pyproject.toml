@@ -25,7 +25,7 @@ classifiers = [
 
 [project.optional-dependencies]
 bio = ["anndata", "scanpy"]
-docs = ["myst-parser", "numpydoc", "pydata-sphinx-theme", "sphinx"]
+docs = ["myst-parser", "numpydoc", "sphinx"]
 develop = [
     "bumpver",
     "coverage",
@@ -111,10 +111,14 @@ checks = [
     "SS06", # nor require the summary to fit on one line
 ]
 override_SS05 = ['^Access ', '^Assess ', '^Process ']
+# Skip private (underscore-prefixed) functions/methods: node_name is dotted
+# module-qualified, so match the underscore after the final dot rather than
+# anchoring on ^_.
+exclude = ['\._\w']
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-v --tb=short"
+testpaths = ["src", "tests"]
+addopts = "-v --tb=short --doctest-modules"
 pythonpath = ["src"]
 
 [tool.ruff]

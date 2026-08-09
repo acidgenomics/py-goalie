@@ -21,11 +21,16 @@ from goalie._vectorize import _check_all
 def is_linux() -> GoalieCheckResult:
     """Check whether the OS is Linux.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = is_linux()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = is_linux()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     if platform.system() == "Linux":
         return _TRUE
@@ -35,11 +40,16 @@ def is_linux() -> GoalieCheckResult:
 def is_macos() -> GoalieCheckResult:
     """Check whether the OS is macOS.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = is_macos()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = is_macos()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     if platform.system() == "Darwin":
         return _TRUE
@@ -49,11 +59,16 @@ def is_macos() -> GoalieCheckResult:
 def is_windows() -> GoalieCheckResult:
     """Check whether the OS is Windows.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = is_windows()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = is_windows()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     if platform.system() == "Windows":
         return _TRUE
@@ -63,11 +78,16 @@ def is_windows() -> GoalieCheckResult:
 def is_unix() -> GoalieCheckResult:
     """Check whether the OS is Unix-based (Linux or macOS).
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = is_unix()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = is_unix()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     if os.name == "posix":
         return _TRUE
@@ -80,11 +100,16 @@ def is_docker() -> GoalieCheckResult:
     Checks for the presence of ``/.dockerenv`` (all platforms) and
     ``docker`` in ``/proc/1/cgroup`` (Linux only).
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = is_docker()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = is_docker()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     if os.path.isfile("/.dockerenv"):
         return _TRUE
@@ -102,11 +127,16 @@ def is_docker() -> GoalieCheckResult:
 def is_conda_enabled() -> GoalieCheckResult:
     """Check whether a conda environment is active.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = is_conda_enabled()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = is_conda_enabled()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     if os.environ.get("CONDA_PREFIX") or os.environ.get("CONDA_DEFAULT_ENV"):
         return _TRUE
@@ -118,11 +148,16 @@ def has_internet() -> GoalieCheckResult:
 
     Attempts a socket connection to dns.google (8.8.8.8) on port 53.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = has_internet()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = has_internet()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     try:
         sock = socket.create_connection(("8.8.8.8", 53), timeout=3)
@@ -141,10 +176,15 @@ def has_cpu(n: int) -> GoalieCheckResult:
     n : int
         Minimum number of logical CPU cores required.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_cpu(1)
-        GoalieCheckResult(ok=True)
+    >>> has_cpu(1)
+    GoalieCheckResult(ok=True)
     """
     count = os.cpu_count()
     if count is None:
@@ -162,10 +202,15 @@ def has_ram(n: int) -> GoalieCheckResult:
     n : int
         Minimum RAM in gigabytes required.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> has_ram(1)
-        GoalieCheckResult(ok=True)
+    >>> has_ram(1)
+    GoalieCheckResult(ok=True)
     """
     gb: float | None = None
     sys = platform.system()
@@ -203,12 +248,17 @@ def is_installed(x: str) -> GoalieCheckResult:
     x : str
         Package name.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_installed("os")
-        GoalieCheckResult(ok=True)
-        >>> is_installed("nonexistent_pkg_xyz_abc")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_installed("os")
+    GoalieCheckResult(ok=True)
+    >>> is_installed("nonexistent_pkg_xyz_abc")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -220,10 +270,20 @@ def is_installed(x: str) -> GoalieCheckResult:
 def all_are_installed(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether all packages are installed.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Package names.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_installed(["os", "sys"])
-        GoalieCheckResult(ok=True)
+    >>> all_are_installed(["os", "sys"])
+    GoalieCheckResult(ok=True)
     """
     return _check_all(x, is_installed)
 
@@ -236,12 +296,17 @@ def is_system_command(x: str) -> GoalieCheckResult:
     x : str
         Command name (e.g. ``"git"``).
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_system_command("python")
-        GoalieCheckResult(ok=True)
-        >>> is_system_command("nonexistent_cmd_xyz_abc")
-        GoalieCheckResult(ok=False, cause=...)
+    >>> is_system_command("python")
+    GoalieCheckResult(ok=True)
+    >>> is_system_command("nonexistent_cmd_xyz_abc")
+    GoalieCheckResult(ok=False, cause=...)
     """
     if not isinstance(x, str):
         return _false("'%s' is not a string.", _to_name(x))
@@ -253,10 +318,20 @@ def is_system_command(x: str) -> GoalieCheckResult:
 def all_are_system_commands(x: Sequence[str]) -> GoalieCheckResult:
     """Check whether all system commands are available on PATH.
 
+    Parameters
+    ----------
+    x : sequence of str
+        Command names.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> all_are_system_commands([])
-        GoalieCheckResult(ok=False, cause="Input has no elements.")
+    >>> all_are_system_commands([])
+    GoalieCheckResult(ok=False, cause='Input has no elements.')
     """
     return _check_all(x, is_system_command)
 
@@ -266,11 +341,16 @@ def is_rstudio() -> GoalieCheckResult:
 
     Checks for the ``RSTUDIO_USER_IDENTITY`` environment variable.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = is_rstudio()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = is_rstudio()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     if os.environ.get("RSTUDIO_USER_IDENTITY"):
         return _TRUE
@@ -282,11 +362,16 @@ def is_vscode() -> GoalieCheckResult:
 
     Checks for the ``VSCODE_INIT_R`` or ``TERM_PROGRAM`` environment variable.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = is_vscode()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = is_vscode()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     if os.environ.get("VSCODE_INIT_R") or os.environ.get("TERM_PROGRAM") == "vscode":
         return _TRUE
@@ -299,11 +384,16 @@ def is_devel() -> GoalieCheckResult:
     Returns True for alpha (a), beta (b), release candidate (rc), or
     development (dev) builds.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = is_devel()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = is_devel()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     vi = sys.version_info
     if vi.releaselevel != "final" or "dev" in sys.version.lower():
@@ -317,11 +407,16 @@ def has_github_pat() -> GoalieCheckResult:
     Checks for the ``GITHUB_PAT``, ``GITHUB_TOKEN``, or
     ``GH_TOKEN`` environment variables.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = has_github_pat()
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = has_github_pat()
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     for var in ("GITHUB_PAT", "GITHUB_TOKEN", "GH_TOKEN"):
         if os.environ.get(var):
@@ -346,11 +441,16 @@ def is_package_version(
         Comparison operator: ``">="``, ``">"``, ``"=="``, ``"!="``,
         ``"<"``, ``"<="``. Default ``">="``.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> result = is_package_version("pip", "1.0.0")
-        >>> isinstance(result, GoalieCheckResult)
-        True
+    >>> result = is_package_version("pip", "1.0.0")
+    >>> isinstance(result, GoalieCheckResult)
+    True
     """
     from importlib.metadata import PackageNotFoundError, version as _meta_version  # noqa: I001,PLC0415
 

@@ -17,14 +17,24 @@ def is_alpha(x: object) -> GoalieCheckResult:
     An alpha level must be a float greater than 0 and less than 1
     (exclusive on both ends).
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_alpha(0.05)
-        GoalieCheckResult(ok=True)
-        >>> is_alpha(1.0)
-        GoalieCheckResult(ok=False, cause="'1.0' is not in open range (0, 1).")
-        >>> is_alpha("xxx")
-        GoalieCheckResult(ok=False, cause="''xxx'' is not float.")
+    >>> is_alpha(0.05)
+    GoalieCheckResult(ok=True)
+    >>> is_alpha(1.0)
+    GoalieCheckResult(ok=False, cause="'1.0' is not in open range (0, 1).")
+    >>> is_alpha("xxx")
+    GoalieCheckResult(ok=False, cause="''xxx'' is not float.")
     """
     if not isinstance(x, float):
         return _false("'%s' is not float.", _to_name(x))
@@ -36,12 +46,22 @@ def is_alpha(x: object) -> GoalieCheckResult:
 def is_header_level(x: object) -> GoalieCheckResult:
     """Check whether the input contains a Markdown header level (1-7).
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_header_level(1)
-        GoalieCheckResult(ok=True)
-        >>> is_header_level(0)
-        GoalieCheckResult(ok=False, cause="'0' is not a valid Markdown header level (1-7).")
+    >>> is_header_level(1)
+    GoalieCheckResult(ok=True)
+    >>> is_header_level(0)
+    GoalieCheckResult(ok=False, cause="'0' is not a valid Markdown header level (1-7).")
     """
     if isinstance(x, bool) or not isinstance(x, (int, float)):
         return _false("'%s' is not integerish.", _to_name(x))
@@ -65,14 +85,26 @@ def is_organism(x: object, *, none_ok: bool = False) -> GoalieCheckResult:
     Subspecies (trinomial) names are also supported, e.g.
     *Canis lupus familiaris*.
 
+    Parameters
+    ----------
+    x : object
+        Value to check.
+    none_ok : bool
+        Allow ``None`` to pass the check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_organism("Homo sapiens")
-        GoalieCheckResult(ok=True)
-        >>> is_organism("Canis lupus familiaris")
-        GoalieCheckResult(ok=True)
-        >>> is_organism("Human")
-        GoalieCheckResult(ok=False, cause="''Human'' is not a valid Latin organism name.")
+    >>> is_organism("Homo sapiens")
+    GoalieCheckResult(ok=True)
+    >>> is_organism("Canis lupus familiaris")
+    GoalieCheckResult(ok=True)
+    >>> is_organism("Human")
+    GoalieCheckResult(ok=False, cause="''Human'' is not a valid Latin organism name.")
     """
     if x is None:
         if none_ok:
@@ -94,10 +126,15 @@ def is_dark() -> GoalieCheckResult:
     Checks for ``GOALIE_DARK`` environment variable or
     ``acid.dark`` style setting.
 
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> is_dark()
-        GoalieCheckResult(ok=False, cause='Dark mode is not enabled.')
+    >>> is_dark()
+    GoalieCheckResult(ok=False, cause='Dark mode is not enabled.')
     """
     dark_env = os.environ.get("GOALIE_DARK", "").lower()
     if dark_env in ("1", "true", "yes"):
@@ -111,14 +148,24 @@ def formal_compress(compress: object) -> GoalieCheckResult:
     Valid values are Python compression format strings (``bz2``,
     ``gzip``, ``lzma``, ``xz``, ``zstd``) or a boolean flag.
 
+    Parameters
+    ----------
+    compress : object
+        Value to check.
+
+    Returns
+    -------
+    GoalieCheckResult
+        Result of the check.
+
     Examples
     --------
-        >>> formal_compress("gzip")
-        GoalieCheckResult(ok=True)
-        >>> formal_compress(True)
-        GoalieCheckResult(ok=True)
-        >>> formal_compress("xxx")
-        GoalieCheckResult(ok=False, cause="''xxx'' is not a valid compression format.")
+    >>> formal_compress("gzip")
+    GoalieCheckResult(ok=True)
+    >>> formal_compress(True)
+    GoalieCheckResult(ok=True)
+    >>> formal_compress("xxx")
+    GoalieCheckResult(ok=False, cause="''xxx'' is not a valid compression format.")
     """
     if isinstance(compress, bool):
         return _TRUE
