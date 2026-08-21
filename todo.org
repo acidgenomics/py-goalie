@@ -1,0 +1,5 @@
+* Packaging
+** TODO Audit bioconda recipe run dependencies
+   goalie 0.2.0 dropped the `bio` extra (anndata, scanpy) and the AnnData
+   checks. Check the bioconda-recipes goalie recipe for stale anndata/scanpy
+   run dependencies and update it if present. Use the `bioconda` skill.
