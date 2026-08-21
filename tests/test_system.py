@@ -1,123 +1,128 @@
-"""Tests for goalie._system."""
+"""Tests for goalie._system module."""
 
+import os
 import platform
 
-from goalie._check import GoalieCheckResult
-from goalie._system import (
-    all_are_installed,
-    all_are_system_commands,
-    has_cpu,
-    has_internet,
-    has_ram,
-    is_conda_enabled,
-    is_docker,
-    is_installed,
-    is_linux,
-    is_macos,
-    is_system_command,
-    is_unix,
-    is_windows,
-)
+import pytest
+
+import goalie
 
 
 class TestOsChecks:
-    def test_is_linux_returns_result(self):
-        result = is_linux()
-        assert isinstance(result, GoalieCheckResult)
+    """Tests for the OS family predicates."""
 
-    def test_is_macos_returns_result(self):
-        result = is_macos()
-        assert isinstance(result, GoalieCheckResult)
+    def test_exactly_one_os_true(self) -> None:
+        """Exactly one of the OS predicates is True."""
+        results = [goalie.is_linux(), goalie.is_macos(), goalie.is_windows()]
+        assert sum(results) == 1
 
-    def test_is_windows_returns_result(self):
-        result = is_windows()
-        assert isinstance(result, GoalieCheckResult)
+    def test_unix_on_posix(self) -> None:
+        """`is_unix` agrees with `os.name`."""
+        assert goalie.is_unix() == (os.name == "posix")
 
-    def test_is_unix_returns_result(self):
-        result = is_unix()
-        assert isinstance(result, GoalieCheckResult)
-
-    def test_exactly_one_os_true(self):
-        results = [is_linux(), is_macos(), is_windows()]
-        true_count = sum(bool(r) for r in results)
-        assert true_count == 1
-
-    def test_unix_on_posix(self):
-        import os
-
-        if os.name == "posix":
-            assert bool(is_unix())
-        else:
-            assert not bool(is_unix())
-
-    def test_macos_matches_platform(self):
-        if platform.system() == "Darwin":
-            assert bool(is_macos())
-        else:
-            assert not bool(is_macos())
+    def test_macos_matches_platform(self) -> None:
+        """`is_macos` agrees with `platform.system`."""
+        assert goalie.is_macos() == (platform.system() == "Darwin")
 
 
 class TestDockerConda:
-    def test_is_docker_returns_result(self):
-        assert isinstance(is_docker(), GoalieCheckResult)
+    """Tests that only assert a bool is returned; the answer is machine-specific."""
 
-    def test_is_conda_enabled_returns_result(self):
-        assert isinstance(is_conda_enabled(), GoalieCheckResult)
+    def test_is_docker_returns_bool(self) -> None:
+        """`is_docker` returns a bool."""
+        assert isinstance(goalie.is_docker(), bool)
+
+    def test_is_conda_enabled_returns_bool(self) -> None:
+        """`is_conda_enabled` returns a bool."""
+        assert isinstance(goalie.is_conda_enabled(), bool)
 
 
 class TestHardware:
-    def test_has_cpu_one(self):
-        assert bool(has_cpu(1))
+    """Tests for `has_cpu` and `has_ram`."""
 
-    def test_has_cpu_too_many(self):
-        assert not bool(has_cpu(99999))
+    def test_has_cpu_one(self) -> None:
+        """Every machine has at least 1 CPU core."""
+        assert goalie.has_cpu(1)
 
-    def test_has_cpu_returns_result(self):
-        assert isinstance(has_cpu(1), GoalieCheckResult)
+    def test_has_cpu_too_many(self) -> None:
+        """No machine has 99999 CPU cores."""
+        assert not goalie.has_cpu(99999)
 
-    def test_has_ram_one_gb(self):
-        assert bool(has_ram(1))
+    def test_has_ram_one_gb(self) -> None:
+        """Every machine has at least 1 GB of RAM."""
+        assert goalie.has_ram(1)
 
-    def test_has_ram_too_much(self):
-        assert not bool(has_ram(99999))
+    def test_has_ram_too_much(self) -> None:
+        """No machine has 99999 GB of RAM."""
+        assert not goalie.has_ram(99999)
 
 
 class TestInternet:
-    def test_returns_result(self):
-        assert isinstance(has_internet(), GoalieCheckResult)
+    """Tests that only assert a bool is returned."""
+
+    def test_returns_bool(self) -> None:
+        """`has_internet` returns a bool."""
+        assert isinstance(goalie.has_internet(), bool)
 
 
 class TestInstalled:
-    def test_stdlib_installed(self):
-        assert bool(is_installed("os"))
-        assert bool(is_installed("sys"))
-        assert bool(is_installed("math"))
+    """Tests for `is_installed`."""
 
-    def test_not_installed(self):
-        assert not bool(is_installed("nonexistent_pkg_xyz_abc"))
+    def test_stdlib_installed(self) -> None:
+        """Standard library modules are importable."""
+        assert goalie.is_installed("os")
+        assert goalie.is_installed("sys")
+        assert goalie.is_installed("math")
 
-    def test_not_a_string(self):
-        assert not bool(is_installed(123))
+    def test_not_installed(self) -> None:
+        """A nonexistent package is not installed."""
+        assert not goalie.is_installed("nonexistent_pkg_xyz_abc")
 
-    def test_all_are_installed_pass(self):
-        assert bool(all_are_installed(["os", "sys"]))
-
-    def test_all_are_installed_fail(self):
-        assert not bool(all_are_installed(["os", "nonexistent_pkg_xyz"]))
-
-    def test_all_are_installed_empty(self):
-        assert not bool(all_are_installed([]))
+    def test_not_a_string(self) -> None:
+        """Non-string input returns False."""
+        assert not goalie.is_installed(123)
 
 
 class TestSystemCommand:
-    def test_python_available(self):
-        assert bool(is_system_command("python")) or bool(is_system_command("python3"))
+    """Tests for `is_system_command`."""
 
-    def test_missing_command(self):
-        assert not bool(is_system_command("nonexistent_cmd_xyz_abc_123"))
+    def test_python_available(self) -> None:
+        """Either `python` or `python3` is on PATH."""
+        assert goalie.is_system_command("python") or goalie.is_system_command("python3")
 
-    def test_not_a_string(self):
-        assert not bool(is_system_command(123))
+    def test_missing_command(self) -> None:
+        """A nonexistent command is not on PATH."""
+        assert not goalie.is_system_command("nonexistent_cmd_xyz_abc_123")
 
-    def test_all_are_system_commands_empty(self):
-        assert not bool(all_are_system_commands([]))
+    def test_not_a_string(self) -> None:
+        """Non-string input returns False."""
+        assert not goalie.is_system_command(123)
+
+
+class TestVscode:
+    """Tests that only assert a bool is returned."""
+
+    def test_returns_bool(self) -> None:
+        """`is_vscode` returns a bool."""
+        assert isinstance(goalie.is_vscode(), bool)
+
+
+class TestGithubPat:
+    """Tests that only assert a bool is returned."""
+
+    def test_returns_bool(self) -> None:
+        """`has_github_pat` returns a bool."""
+        assert isinstance(goalie.has_github_pat(), bool)
+
+
+class TestPackageVersion:
+    """Tests for `is_package_version`."""
+
+    def test_not_installed(self) -> None:
+        """A nonexistent package fails the constraint."""
+        assert not goalie.is_package_version("nonexistent_pkg_xyz_abc", "1.0.0")
+
+    def test_unsupported_operator(self) -> None:
+        """An unsupported operator raises ValueError."""
+        with pytest.raises(ValueError, match="Unsupported operator"):
+            goalie.is_package_version("goalie", "0.0.1", op="~=")

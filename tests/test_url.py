@@ -38,6 +38,10 @@ class TestIsExistingUrl:
         """False for non-string input."""
         assert not goalie.is_existing_url(42)
 
+    def test_unsupported_protocol(self) -> None:
+        """False for a URL with an unsupported protocol."""
+        assert not goalie.is_existing_url("s3://bucket/key")
+
 
 class TestIsAwsS3Uri:
     """Tests for `is_aws_s3_uri`."""
@@ -57,3 +61,15 @@ class TestIsAwsS3Uri:
     def test_empty_s3(self) -> None:
         """False for bare S3 scheme without bucket."""
         assert not goalie.is_aws_s3_uri("s3://")
+
+
+class TestIsExistingAwsS3Uri:
+    """Tests for `is_existing_aws_s3_uri`."""
+
+    def test_non_uri(self) -> None:
+        """False for a non-S3-URI string."""
+        assert not goalie.is_existing_aws_s3_uri("not-an-s3-uri")
+
+    def test_non_string(self) -> None:
+        """False for non-string input."""
+        assert not goalie.is_existing_aws_s3_uri(42)

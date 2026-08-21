@@ -1,4 +1,4 @@
-"""Tests for goalie._hex module."""
+"""Tests for goalie._string module."""
 
 import goalie
 
@@ -33,3 +33,23 @@ class TestIsHexColor:
     def test_non_string(self) -> None:
         """Non-string input is invalid."""
         assert not goalie.is_hex_color(42)
+
+
+class TestIsMatchingRegex:
+    """Tests for `is_matching_regex`."""
+
+    def test_match(self) -> None:
+        """String matching regex pattern returns True."""
+        assert goalie.is_matching_regex("hello world", r"^hello")
+
+    def test_no_match(self) -> None:
+        """String not matching regex pattern returns False."""
+        assert not goalie.is_matching_regex("goodbye", r"^hello")
+
+    def test_complex_pattern(self) -> None:
+        """Complex regex pattern matches correctly."""
+        assert goalie.is_matching_regex("abc123", r"\d+")
+
+    def test_non_string(self) -> None:
+        """Non-string input returns False."""
+        assert not goalie.is_matching_regex(42, r"\d+")

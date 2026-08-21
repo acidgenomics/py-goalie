@@ -1,11 +1,19 @@
 # goalie
 
-Assertive check functions for defensive Python programming.
+Boolean check functions for defensive Python programming.
 
-Every check function returns a `GoalieCheckResult` rather than raising or returning a
-bare `bool`: it's truthy/falsy for use in `if`/`assert`, and on failure it carries a
-`cause` message describing *why* the check failed, so error messages don't need to be
-written by hand at every call site.
+Every check function returns a plain `bool`. Raise at the call site when a check
+fails, using one of the bundled error classes or a builtin exception:
+
+```pycon
+>>> from goalie import CheckValueError, is_hex_color
+>>> color = "red"
+>>> if not is_hex_color(color):
+...     raise CheckValueError(color, "a hex color code", name="color")
+Traceback (most recent call last):
+    ...
+goalie._errors.CheckValueError: color must be a hex color code, got 'red'.
+```
 
 ## Installation
 
@@ -46,72 +54,48 @@ conda activate "$name"
 python -c 'import goalie'
 ```
 
-## Scalar and vectorized checks
+## Errors
 
-Most checks come in a scalar form (`is_*`, `has_*`, `are_*`) and, where it makes sense
-to check a whole collection at once, a vectorized `all_are_*`/`all_have_*` form:
+`CheckError` is the base class; `CheckTypeError` also subclasses `TypeError` and
+`CheckValueError` also subclasses `ValueError`, so existing `except TypeError`/
+`except ValueError` blocks catch them without changes.
 
-```pycon
->>> from goalie import is_string, is_scalar_integer, all_are_positive
->>> is_string("hello")
-GoalieCheckResult(ok=True)
->>> is_scalar_integer(5)
-GoalieCheckResult(ok=True)
->>> all_are_positive([1, 2, 3])
-GoalieCheckResult(ok=True)
-```
+## Collection and string checks
 
-A failing check carries a `cause` message instead of just `False`:
+`has_duplicates`, `is_subset`, and `are_set_equal` operate on any iterable of
+hashable values. `is_hex_color` and `is_matching_regex` check strings.
 
 ```pycon
->>> is_string(5)
-GoalieCheckResult(ok=False, cause="'5' is not str.")
+>>> from goalie import has_duplicates, is_subset
+>>> has_duplicates(["a", "a", "b"])
+True
+>>> is_subset({1, 2}, {1, 2, 3})
+True
 ```
 
-Categories include comparisons (`is_equal_to`, `is_greater_than`, ...), dimensions
-(`has_dims`, `has_rows`, `has_unique_cols`, ...), filesystem (`is_file`, `is_symlink`,
-`is_git_repo`, ...), string matching (`is_matching_regex`, `is_matching_fixed`),
-numeric ranges (`is_in_range`, `is_percentage`, `is_proportion`, ...), names
-(`has_names`, `valid_names`, `has_rownames`, ...), sets (`is_subset`, `are_set_equal`,
-...), and type checks (`is_all`, `is_any`, `is_vectorish`).
+## Filesystem and URL checks
+
+`has_access`, `is_compressed_file`, `is_git_repo`, and `is_temp_file` check paths.
+`is_url`, `is_existing_url`, `is_aws_s3_uri`, and `is_existing_aws_s3_uri` check
+URLs and S3 URIs; the `is_existing_*` pair make a network call.
 
 ## System checks
 
 A separate family of checks inspects the runtime environment rather than a value:
-`is_linux`/`is_macos`/`is_windows`, `is_docker`, `is_conda_enabled`, `has_internet`,
-`has_cpu`/`has_ram`, `is_installed`, `is_system_command`, and `is_package_version`.
+`is_linux`/`is_macos`/`is_windows`/`is_unix`, `is_docker`, `is_conda_enabled`,
+`is_vscode`, `has_internet`, `has_cpu`/`has_ram`, `has_github_pat`, `is_installed`,
+`is_system_command`, and `is_package_version`.
 
 ```pycon
 >>> from goalie import is_installed
 >>> is_installed("os")
-GoalieCheckResult(ok=True)
+True
 ```
 
-## Assert and validate
-
-`assert_` raises `GoalieAssertionError` on the first failing check (short-circuit);
-`validate` evaluates every check and returns the collected failure causes (or `None`
-if all pass), for use in constructors or validators instead of raising immediately:
-
-```pycon
->>> from goalie import assert_, is_string
->>> assert_(is_string(5))
-Traceback (most recent call last):
-    ...
-goalie._engine.GoalieAssertionError: '5' is not str.
-```
-
-```pycon
->>> from goalie import validate, is_scalar_integer
->>> validate(is_string(5), is_scalar_integer("x"))
-["'5' is not str.", "''x'' is not integer."]
-```
-
-## Bioinformatics checks
-
-`has_clusters`, `has_metrics`, and `has_multiple_samples` check AnnData-like objects
-(via duck typing, so `anndata`/`scanpy` aren't required unless you use these) for
-cluster annotations, QC metrics, and multi-sample structure in `.obs`.
+`has_cpu` and `has_ram` raise `RuntimeError` if the machine's core count or RAM
+cannot be determined; a failed measurement isn't the same as a "no" answer.
+`is_existing_aws_s3_uri` raises `RuntimeError` under the same reasoning when
+neither `boto3` nor the `aws` CLI is available to make the check.
 
 ```{toctree}
 :maxdepth: 1

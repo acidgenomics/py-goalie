@@ -1,7 +1,4 @@
-"""System and environment check functions.
-
-Converted from R system-check-scalar-* and system-check-vector-* functions.
-"""
+"""System and environment check functions."""
 
 import importlib.metadata
 import importlib.util
@@ -11,164 +8,140 @@ import re
 import shutil
 import socket
 import subprocess
-import sys
-from collections.abc import Sequence
-
-from goalie._check import _TRUE, GoalieCheckResult, _false, _to_name
-from goalie._vectorize import _check_all
 
 
-def is_linux() -> GoalieCheckResult:
+def is_linux() -> bool:
     """Check whether the OS is Linux.
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if running on Linux.
 
     Examples
     --------
-    >>> result = is_linux()
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(is_linux(), bool)
     True
     """
-    if platform.system() == "Linux":
-        return _TRUE
-    return _false("OS is not Linux (actual: %s).", platform.system())
+    return platform.system() == "Linux"
 
 
-def is_macos() -> GoalieCheckResult:
+def is_macos() -> bool:
     """Check whether the OS is macOS.
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if running on macOS.
 
     Examples
     --------
-    >>> result = is_macos()
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(is_macos(), bool)
     True
     """
-    if platform.system() == "Darwin":
-        return _TRUE
-    return _false("OS is not macOS (actual: %s).", platform.system())
+    return platform.system() == "Darwin"
 
 
-def is_windows() -> GoalieCheckResult:
+def is_windows() -> bool:
     """Check whether the OS is Windows.
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if running on Windows.
 
     Examples
     --------
-    >>> result = is_windows()
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(is_windows(), bool)
     True
     """
-    if platform.system() == "Windows":
-        return _TRUE
-    return _false("OS is not Windows (actual: %s).", platform.system())
+    return platform.system() == "Windows"
 
 
-def is_unix() -> GoalieCheckResult:
+def is_unix() -> bool:
     """Check whether the OS is Unix-based (Linux or macOS).
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if ``os.name`` is ``"posix"``.
 
     Examples
     --------
-    >>> result = is_unix()
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(is_unix(), bool)
     True
     """
-    if os.name == "posix":
-        return _TRUE
-    return _false("OS is not Unix-based (os.name: %s).", os.name)
+    return os.name == "posix"
 
 
-def is_docker() -> GoalieCheckResult:
+def is_docker() -> bool:
     """Check whether the session is running inside Docker.
 
-    Checks for the presence of ``/.dockerenv`` (all platforms) and
-    ``docker`` in ``/proc/1/cgroup`` (Linux only).
+    Checks for ``/.dockerenv`` (all platforms) and ``docker`` in
+    ``/proc/1/cgroup`` (Linux only).
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if running inside a Docker container.
 
     Examples
     --------
-    >>> result = is_docker()
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(is_docker(), bool)
     True
     """
     if os.path.isfile("/.dockerenv"):
-        return _TRUE
+        return True
     cgroup = "/proc/1/cgroup"
     if os.path.isfile(cgroup):
         try:
             with open(cgroup) as fh:
-                if "docker" in fh.read():
-                    return _TRUE
+                return "docker" in fh.read()
         except OSError:
             pass
-    return _false("Session is not running inside Docker.")
+    return False
 
 
-def is_conda_enabled() -> GoalieCheckResult:
+def is_conda_enabled() -> bool:
     """Check whether a conda environment is active.
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if ``CONDA_PREFIX`` or ``CONDA_DEFAULT_ENV`` is set.
 
     Examples
     --------
-    >>> result = is_conda_enabled()
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(is_conda_enabled(), bool)
     True
     """
-    if os.environ.get("CONDA_PREFIX") or os.environ.get("CONDA_DEFAULT_ENV"):
-        return _TRUE
-    return _false("No active conda environment detected.")
+    return bool(os.environ.get("CONDA_PREFIX") or os.environ.get("CONDA_DEFAULT_ENV"))
 
 
-def has_internet() -> GoalieCheckResult:
+def has_internet() -> bool:
     """Check whether an internet connection is available.
 
-    Attempts a socket connection to dns.google (8.8.8.8) on port 53.
+    Attempts a socket connection to 8.8.8.8 on port 53.
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if the connection succeeds.
 
     Examples
     --------
-    >>> result = has_internet()
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(has_internet(), bool)
     True
     """
     try:
-        sock = socket.create_connection(("8.8.8.8", 53), timeout=3)
-        sock.close()
-        return _TRUE
+        with socket.create_connection(("8.8.8.8", 53), timeout=3):
+            pass
     except OSError:
-        pass
-    return _false("No internet connection detected.")
+        return False
+    return True
 
 
-def has_cpu(n: int) -> GoalieCheckResult:
+def has_cpu(n: int) -> bool:
     """Check whether the machine has at least n CPU cores.
 
     Parameters
@@ -178,50 +151,59 @@ def has_cpu(n: int) -> GoalieCheckResult:
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if the machine has at least ``n`` cores.
+
+    Raises
+    ------
+    RuntimeError
+        If the CPU count cannot be determined.
 
     Examples
     --------
     >>> has_cpu(1)
-    GoalieCheckResult(ok=True)
+    True
     """
     count = os.cpu_count()
     if count is None:
-        return _false("Could not determine CPU count.")
-    if count >= n:
-        return _TRUE
-    return _false("Machine has %d CPU core%s; %d required.", count, "" if count == 1 else "s", n)
+        msg = "Could not determine CPU count."
+        raise RuntimeError(msg)
+    return count >= n
 
 
-def has_ram(n: int) -> GoalieCheckResult:
+def has_ram(n: float) -> bool:
     """Check whether the machine has at least n GB of RAM.
 
     Parameters
     ----------
-    n : int
+    n : float
         Minimum RAM in gigabytes required.
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if the machine has at least ``n`` GB of RAM.
+
+    Raises
+    ------
+    RuntimeError
+        If the available RAM cannot be determined.
 
     Examples
     --------
     >>> has_ram(1)
-    GoalieCheckResult(ok=True)
+    True
     """
     gb: float | None = None
-    sys = platform.system()
-    if sys in ("Linux", "Darwin"):
+    system = platform.system()
+    if system in ("Linux", "Darwin"):
         try:
             page_size = os.sysconf("SC_PAGE_SIZE")
             page_count = os.sysconf("SC_PHYS_PAGES")
             gb = (page_size * page_count) / (1024**3)
         except (AttributeError, ValueError):
             pass
-    if gb is None and sys == "Darwin":
+    if gb is None and system == "Darwin":
         try:
             out = subprocess.check_output(
                 ["sysctl", "-n", "hw.memsize"],
@@ -229,206 +211,97 @@ def has_ram(n: int) -> GoalieCheckResult:
                 timeout=5,
             )
             gb = int(out.strip()) / (1024**3)
-        except Exception:
+        except (OSError, subprocess.SubprocessError, ValueError):
             pass
     if gb is None:
-        return _false("Could not determine available RAM.")
-    if gb >= n:
-        return _TRUE
-    return _false("Machine has %.1f GB RAM; %d GB required.", gb, n)
+        msg = "Could not determine available RAM."
+        raise RuntimeError(msg)
+    return gb >= n
 
 
-def is_installed(x: str) -> GoalieCheckResult:
+def is_installed(x: object) -> bool:
     """Check whether a Python package is installed (importable).
 
     Does not import the package; uses ``importlib.util.find_spec``.
 
     Parameters
     ----------
-    x : str
+    x : object
         Package name.
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if the package is importable.
 
     Examples
     --------
     >>> is_installed("os")
-    GoalieCheckResult(ok=True)
+    True
     >>> is_installed("nonexistent_pkg_xyz_abc")
-    GoalieCheckResult(ok=False, cause=...)
+    False
     """
-    if not isinstance(x, str):
-        return _false("'%s' is not a string.", _to_name(x))
-    if importlib.util.find_spec(x) is not None:
-        return _TRUE
-    return _false("Package '%s' is not installed.", x)
+    return isinstance(x, str) and importlib.util.find_spec(x) is not None
 
 
-def all_are_installed(x: Sequence[str]) -> GoalieCheckResult:
-    """Check whether all packages are installed.
-
-    Parameters
-    ----------
-    x : sequence of str
-        Package names.
-
-    Returns
-    -------
-    GoalieCheckResult
-        Result of the check.
-
-    Examples
-    --------
-    >>> all_are_installed(["os", "sys"])
-    GoalieCheckResult(ok=True)
-    """
-    return _check_all(x, is_installed)
-
-
-def is_system_command(x: str) -> GoalieCheckResult:
+def is_system_command(x: object) -> bool:
     """Check whether a system command is available on PATH.
 
     Parameters
     ----------
-    x : str
+    x : object
         Command name (e.g. ``"git"``).
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if the command is found on ``PATH``.
 
     Examples
     --------
-    >>> is_system_command("python")
-    GoalieCheckResult(ok=True)
-    >>> is_system_command("nonexistent_cmd_xyz_abc")
-    GoalieCheckResult(ok=False, cause=...)
-    """
-    if not isinstance(x, str):
-        return _false("'%s' is not a string.", _to_name(x))
-    if shutil.which(x) is not None:
-        return _TRUE
-    return _false("System command '%s' is not available on PATH.", x)
-
-
-def all_are_system_commands(x: Sequence[str]) -> GoalieCheckResult:
-    """Check whether all system commands are available on PATH.
-
-    Parameters
-    ----------
-    x : sequence of str
-        Command names.
-
-    Returns
-    -------
-    GoalieCheckResult
-        Result of the check.
-
-    Examples
-    --------
-    >>> all_are_system_commands([])
-    GoalieCheckResult(ok=False, cause='Input has no elements.')
-    """
-    return _check_all(x, is_system_command)
-
-
-def is_rstudio() -> GoalieCheckResult:
-    """Check whether the session is running inside RStudio.
-
-    Checks for the ``RSTUDIO_USER_IDENTITY`` environment variable.
-
-    Returns
-    -------
-    GoalieCheckResult
-        Result of the check.
-
-    Examples
-    --------
-    >>> result = is_rstudio()
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(is_system_command("python"), bool)
     True
+    >>> is_system_command("nonexistent_cmd_xyz_abc")
+    False
     """
-    if os.environ.get("RSTUDIO_USER_IDENTITY"):
-        return _TRUE
-    return _false("Session is not running inside RStudio.")
+    return isinstance(x, str) and shutil.which(x) is not None
 
 
-def is_vscode() -> GoalieCheckResult:
+def is_vscode() -> bool:
     """Check whether the session is running inside VS Code.
 
-    Checks for the ``VSCODE_INIT_R`` or ``TERM_PROGRAM`` environment variable.
-
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if the ``TERM_PROGRAM`` environment variable is ``"vscode"``.
 
     Examples
     --------
-    >>> result = is_vscode()
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(is_vscode(), bool)
     True
     """
-    if os.environ.get("VSCODE_INIT_R") or os.environ.get("TERM_PROGRAM") == "vscode":
-        return _TRUE
-    return _false("Session is not running inside VS Code.")
+    return os.environ.get("TERM_PROGRAM") == "vscode"
 
 
-def is_devel() -> GoalieCheckResult:
-    """Check whether the Python build is a development/pre-release version.
-
-    Returns True for alpha (a), beta (b), release candidate (rc), or
-    development (dev) builds.
-
-    Returns
-    -------
-    GoalieCheckResult
-        Result of the check.
-
-    Examples
-    --------
-    >>> result = is_devel()
-    >>> isinstance(result, GoalieCheckResult)
-    True
-    """
-    vi = sys.version_info
-    if vi.releaselevel != "final" or "dev" in sys.version.lower():
-        return _TRUE
-    return _false("Python version '%s' is not a development build.", sys.version.split()[0])
-
-
-def has_github_pat() -> GoalieCheckResult:
+def has_github_pat() -> bool:
     """Check whether a GitHub PAT is set in the environment.
 
-    Checks for the ``GITHUB_PAT``, ``GITHUB_TOKEN``, or
-    ``GH_TOKEN`` environment variables.
+    Checks ``GITHUB_PAT``, ``GITHUB_TOKEN``, and ``GH_TOKEN``.
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if any of the three environment variables is set.
 
     Examples
     --------
-    >>> result = has_github_pat()
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(has_github_pat(), bool)
     True
     """
-    for var in ("GITHUB_PAT", "GITHUB_TOKEN", "GH_TOKEN"):
-        if os.environ.get(var):
-            return _TRUE
-    return _false("No GitHub PAT found (checked GITHUB_PAT, GITHUB_TOKEN, GH_TOKEN).")
+    return any(os.environ.get(var) for var in ("GITHUB_PAT", "GITHUB_TOKEN", "GH_TOKEN"))
 
 
-def is_package_version(
-    x: str,
-    version: str,
-    op: str = ">=",
-) -> GoalieCheckResult:
+def is_package_version(x: str, version: str, op: str = ">=") -> bool:
     """Check whether an installed package satisfies a version constraint.
 
     Parameters
@@ -438,29 +311,27 @@ def is_package_version(
     version : str
         Version string to compare against (e.g. ``"1.2.0"``).
     op : str
-        Comparison operator: ``">="``, ``">"``, ``"=="``, ``"!="``,
-        ``"<"``, ``"<="``. Default ``">="``.
+        Comparison operator: ``">="``, ``">"``, ``"=="``, ``"!="``, ``"<"``,
+        or ``"<="``.
 
     Returns
     -------
-    GoalieCheckResult
-        Result of the check.
+    bool
+        ``True`` if the installed version satisfies the constraint.
+        ``False`` if the package is not installed.
+
+    Raises
+    ------
+    ValueError
+        If ``op`` is not one of the supported operators.
 
     Examples
     --------
-    >>> result = is_package_version("pip", "1.0.0")
-    >>> isinstance(result, GoalieCheckResult)
+    >>> isinstance(is_package_version("goalie", "0.0.1"), bool)
     True
+    >>> is_package_version("nonexistent_pkg_xyz_abc", "1.0.0")
+    False
     """
-    from importlib.metadata import PackageNotFoundError, version as _meta_version  # noqa: I001,PLC0415
-
-    def _parse(v: str) -> tuple[int, ...]:
-        # Parse only the numeric part before any alpha/beta/rc suffix.
-        m = re.match(r"^(\d+)(?:\.(\d+))?(?:\.(\d+))?", v)
-        if not m:
-            return (0,)
-        return tuple(int(g) for g in m.groups() if g is not None)
-
     op_map = {
         ">=": lambda a, b: a >= b,
         ">": lambda a, b: a > b,
@@ -470,19 +341,18 @@ def is_package_version(
         "<=": lambda a, b: a <= b,
     }
     if op not in op_map:
-        return _false("Unsupported operator '%s'.", op)
+        msg = f"Unsupported operator {op!r}."
+        raise ValueError(msg)
+
+    def _parse(v: str) -> tuple[int, ...]:
+        # Parse only the numeric part before any alpha/beta/rc suffix.
+        m = re.match(r"^(\d+)(?:\.(\d+))?(?:\.(\d+))?", v)
+        if not m:
+            return (0,)
+        return tuple(int(g) for g in m.groups() if g is not None)
+
     try:
-        installed_str = _meta_version(x)
-    except PackageNotFoundError:
-        return _false("Package '%s' is not installed.", x)
-    installed = _parse(installed_str)
-    required = _parse(version)
-    if op_map[op](installed, required):
-        return _TRUE
-    return _false(
-        "Package '%s' version %s does not satisfy %s %s.",
-        x,
-        installed_str,
-        op,
-        version,
-    )
+        installed_str = importlib.metadata.version(x)
+    except importlib.metadata.PackageNotFoundError:
+        return False
+    return op_map[op](_parse(installed_str), _parse(version))
