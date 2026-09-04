@@ -4,7 +4,7 @@ requires = ["uv_build>=0.11,<1"]
 
 [project]
 name = "acidgenomics-goalie"
-version = "0.2.0"
+version = "0.2.1"
 description = "Boolean check functions for defensive Python programming."
 readme = "README.md"
 license = "Apache-2.0"
@@ -68,7 +68,7 @@ error-on-warning = true
 [tool.bumpver]
 commit = true
 commit_message = "Bump to {new_version}."
-current_version = "v0.2.0"
+current_version = "v0.2.1"
 push = false
 tag = false
 tag_message = "{new_version}"
